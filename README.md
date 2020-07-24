@@ -1,8 +1,20 @@
 ## FullContact Go Client
 The official [FullContact](https://www.fullcontact.com/) Golang Client Library for the FullContact V3 APIs.
 
-## Add to your Project
-TODO
+## Installation
+
+Make sure your project is using Go Modules (it will have a `go.mod` file in its
+root if it already is):
+
+``` sh
+go mod init
+```
+
+Then, reference fullcontact-go in a Go program with `import`:
+
+``` go
+import fc "github.com/fullcontact/fullcontact-go/fc"
+```
 
 ## Working with FullContact Client
 FullContact client supports v3 Enrich APIs which are super simplified to easily 
@@ -24,11 +36,11 @@ Once you’re on board with the API behavior, FullContact Client library should 
 your integration.
 
 ### Supported APIs
-- _Enrich_
+- _[Enrich](https://dashboard.fullcontact.com/api-ref#enrich)_
     - `person.enrich`
     - `company.enrich`
     - `company.search`
-- _Resolve_
+- _[Resolve](https://dashboard.fullcontact.com/api-ref#resolve-2)_
     - `identity.map`
     - `identity.resolve`
     - `identity.delete`
@@ -43,6 +55,7 @@ cp, err := fc.NewStaticCredentialsProvider("your-api-key")
 ```
 - __Through System Environment Variable__:
 ```go
+//API Key is stored as Environment variable FC_API_KEY
 cp, err := fc.NewDefaultCredentialsProvider("FC_API_KEY")
 ```
 - If __no__ ```CredentialsProvider``` is specified while making FullContact Client,
@@ -75,7 +88,8 @@ type RetryHandler interface {
 }
 ```
 In case of failure, FullContact Client will auto-retry for same request based on certain conditions set in RetryHandler
-- Although optional, a custom Retry handler can be created by implementing `RetryHandler` interface and then used to make FC client. 
+- Although optional, a custom Retry handler can be created by implementing `RetryHandler` interface and then be 
+used to make FC client. 
 By default, client will use `DefaultRetryHandler` to schedule a retry for same request, with `retryAttempts = 1`, 
 `retryDelayMillis = 1000`, and in case of `429`(rate limit error) or `503`(capacity limit error).
 
