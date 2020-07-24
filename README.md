@@ -3,17 +3,20 @@ The official [FullContact](https://www.fullcontact.com/) Golang Client Library f
 
 ## Installation
 
-Make sure your project is using Go Modules (it will have a `go.mod` file in its
-root if it already is):
-
-``` sh
-go mod init
+To install FullContact Go client, use `go get`:
+```sh
+go get github.com/fullcontact/fullcontact-go/fc
 ```
 
 Then, reference fullcontact-go in a Go program with `import`:
 
 ``` go
 import fc "github.com/fullcontact/fullcontact-go/fc"
+```
+
+To update FullContact Go client to the latest version use:
+```sh
+go get -u github.com/fullcontact/fullcontact-go/fc
 ```
 
 ## Working with FullContact Client
