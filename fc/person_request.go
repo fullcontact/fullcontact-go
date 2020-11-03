@@ -13,6 +13,8 @@ type PersonRequest struct {
 	WebhookUrl string      `json:"webhookUrl,omitempty"`
 	RecordId   string      `json:"recordId,omitempty"`
 	PersonId   string      `json:"personId,omitempty"`
+	PartnerId  string      `json:"partnerId,omitempty"`
+	LiNonId    string      `json:"li_nonid,omitempty"`
 	Confidence string      `json:"confidence,omitempty"`
 	Infer      bool        `json:"infer,omitempty"`
 }
@@ -155,6 +157,18 @@ func WithRecordId(recordId string) PersonRequestOption {
 func WithPersonId(personId string) PersonRequestOption {
 	return func(pr *PersonRequest) {
 		pr.PersonId = personId
+	}
+}
+
+func WithPartnerId(partnerId string) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.PartnerId = partnerId
+	}
+}
+
+func WithLiNonId(liNonId string) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.LiNonId = liNonId
 	}
 }
 

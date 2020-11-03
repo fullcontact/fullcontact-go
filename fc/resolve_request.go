@@ -3,14 +3,16 @@ package fullcontact
 type ResolveRequestOption func(pr *ResolveRequest)
 
 type ResolveRequest struct {
-	Emails   []string    `json:"emails,omitempty"`
-	Phones   []string    `json:"phones,omitempty"`
-	Maid     []string    `json:"maids,omitempty"`
-	Location *Location   `json:"location,omitempty"`
-	Name     *PersonName `json:"name,omitempty"`
-	Profiles []*Profile  `json:"profiles,omitempty"`
-	RecordId string      `json:"recordId,omitempty"`
-	PersonId string      `json:"personId,omitempty"`
+	Emails    []string    `json:"emails,omitempty"`
+	Phones    []string    `json:"phones,omitempty"`
+	Maid      []string    `json:"maids,omitempty"`
+	Location  *Location   `json:"location,omitempty"`
+	Name      *PersonName `json:"name,omitempty"`
+	Profiles  []*Profile  `json:"profiles,omitempty"`
+	RecordId  string      `json:"recordId,omitempty"`
+	PersonId  string      `json:"personId,omitempty"`
+	PartnerId string      `json:"partnerId,omitempty"`
+	LiNonId   string      `json:"li_nonid,omitempty"`
 }
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
@@ -148,6 +150,18 @@ func WithRecordIdForResolve(recordId string) ResolveRequestOption {
 func WithPersonIdForResolve(personId string) ResolveRequestOption {
 	return func(resolveRequest *ResolveRequest) {
 		resolveRequest.PersonId = personId
+	}
+}
+
+func WithPartnerIdForResolve(partnerId string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.PartnerId = partnerId
+	}
+}
+
+func WithLiNonIdForResolve(liNonId string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.LiNonId = liNonId
 	}
 }
 

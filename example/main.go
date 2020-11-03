@@ -65,6 +65,7 @@ func main() {
 	if resp.IsSuccessful == true {
 		fmt.Printf("Person Response: %v", *resp.PersonResponse)
 		fmt.Println(resp.PersonResponse.FullName)
+		fmt.Println(resp.PersonResponse.Details.Identifiers.LiNonId)
 	}
 
 	//Company Enrich
