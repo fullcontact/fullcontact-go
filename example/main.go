@@ -118,6 +118,19 @@ func main() {
 		fmt.Printf("PersonIds Mapped: %v", resp.ResolveResponse.PersonIds)
 	}
 
+	//Identity Resolve With Tags
+	resolveRequest, err = fc.NewResolveRequest(fc.WithRecordIdForResolve("r1"))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	resp = <-fcClient.IdentityResolveWithTags(resolveRequest)
+	fmt.Printf("\n\nIdentity Resolve with Tags API Response: %v", resp)
+	if resp.IsSuccessful {
+		fmt.Printf("Tags: %v", resp.ResolveResponseWithTags.Tags)
+	}
+
 	//Identity Delete
 	resolveRequest, err = fc.NewResolveRequest(fc.WithRecordIdForResolve("r1"))
 	if err != nil {

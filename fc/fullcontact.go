@@ -86,6 +86,8 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setCompanySearchResponse(apiResponse)
 		case identityMapUrl, identityResolveUrl, identityDeleteUrl:
 			setResolveResponse(apiResponse)
+		case identityResolveWithTagsUrl:
+			setResolveResponseWithTags(apiResponse)
 		}
 	}
 	ch <- apiResponse
@@ -191,6 +193,23 @@ func (fcClient *fullContactClient) IdentityResolve(resolveRequest *ResolveReques
 		return ch
 	}
 	return fcClient.resolveRequest(ch, resolveRequest, identityResolveUrl)
+}
+
+/* Resolve
+FullContact Resolve API - IdentityResolve with Tags in response, takes an ResolveRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) IdentityResolveWithTags(resolveRequest *ResolveRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if resolveRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Resolve Request can't be nil"))
+		return ch
+	}
+	err := validateForIdentityResolve(resolveRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	return fcClient.resolveRequest(ch, resolveRequest, identityResolveWithTagsUrl)
 }
 
 /* Resolve
@@ -304,6 +323,27 @@ func setResolveResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
 	apiResponse.ResolveResponse = &resolveResponse
+}
+
+func setResolveResponseWithTags(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var resolveResponse ResolveResponseWithTags
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &resolveResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
+	apiResponse.ResolveResponseWithTags = &resolveResponse
 }
 
 func min(x, y int) int {
