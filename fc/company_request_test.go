@@ -40,7 +40,7 @@ func TestNewCompanyRequestInvalidSort(t *testing.T) {
 		WithCountry("US"),
 		WithLocationForCompany("Denver, CO"),
 		WithSort("test"))
-	assert.Errorf(t, err, "Sort value can only be 'traffic','relevance','employees'")
+	assert.EqualError(t, err, "FullContactError: Sort value can only be 'traffic','relevance','employees'")
 }
 
 func TestNilCompanyEnrichRequest(t *testing.T) {
@@ -48,7 +48,7 @@ func TestNilCompanyEnrichRequest(t *testing.T) {
 	ch := fcTestClient.CompanyEnrich(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Company Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Company Request can't be nil")
 }
 
 func TestNilCompanySearchRequest(t *testing.T) {
@@ -56,7 +56,7 @@ func TestNilCompanySearchRequest(t *testing.T) {
 	ch := fcTestClient.CompanySearch(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Company Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Company Request can't be nil")
 }
 
 func TestInvalidCompanyEnrichRequest(t *testing.T) {
@@ -65,7 +65,7 @@ func TestInvalidCompanyEnrichRequest(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.CompanyEnrich(cr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Company Domain is mandatory for Company Enrich")
+	assert.EqualError(t, resp.Err, "FullContactError: Company Domain is mandatory for Company Enrich")
 }
 
 func TestInvalidCompanySearchRequest(t *testing.T) {
@@ -74,5 +74,5 @@ func TestInvalidCompanySearchRequest(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.CompanySearch(cr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Company Name is mandatory for Company Search")
+	assert.EqualError(t, resp.Err, "FullContactError: Company Name is mandatory for Company Search")
 }
