@@ -137,9 +137,11 @@ type Age struct {
 }
 
 type Identifiers struct {
-	Maids     []Maids  `json:"maids"`
-	PersonIds []string `json:"personIds"`
-	RecordIds []string `json:"recordIds"`
+	Maids      []Maids  `json:"maids"`
+	PersonIds  []string `json:"personIds"`
+	RecordIds  []string `json:"recordIds"`
+	LiNonId    []string `json:"li_nonid"`
+	PartnerIds []string `json:"partnerIds"`
 }
 
 type Maids struct {
