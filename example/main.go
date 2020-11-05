@@ -143,4 +143,11 @@ func main() {
 	if resp.IsSuccessful {
 		fmt.Println("Record Deleted Successfully!")
 	}
+
+	//Email Verification
+	resp = <-fcClient.EmailVerification("bart@fullcontact.com")
+	fmt.Printf("\n\nEmail Verification API Response: %v", resp)
+	if resp.IsSuccessful {
+		fmt.Println(resp.EmailVerificationResponse)
+	}
 }

@@ -23,8 +23,29 @@ func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (
 
 }
 
+func (fcClient *fullContactClient) newHttpGetRequest(url string, query string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url+"?"+query, nil)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range fcClient.headers {
+		req.Header.Add(k, v)
+	}
+	req.Header.Add("Authorization", "Bearer "+fcClient.credentialsProvider.getApiKey())
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("User-Agent", userAgent)
+	return req, nil
+
+}
+
 func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIResponse) {
-	req, err := fcClient.newHttpRequest(url, reqBytes)
+	var req *http.Request
+	var err error
+	if url == emailVerificationUrl {
+		req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
+	} else {
+		req, err = fcClient.newHttpRequest(url, reqBytes)
+	}
 	if err != nil {
 		sendToChannel(ch, nil, url, err)
 	}
@@ -44,7 +65,13 @@ func (fcClient *fullContactClient) autoRetry(ch chan *APIResponse, err error, re
 	if retryAttemptsDone < min(fcClient.retryHandler.RetryAttempts(), 5) {
 		retryAttemptsDone++
 		time.Sleep(time.Duration(fcClient.retryHandler.RetryDelayMillis()*(1<<(retryAttemptsDone-1))) * time.Millisecond)
-		req, err := fcClient.newHttpRequest(url, reqBytes)
+		var req *http.Request
+		var err error
+		if url == emailVerificationUrl {
+			req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
+		} else {
+			req, err = fcClient.newHttpRequest(url, reqBytes)
+		}
 		if err != nil {
 			sendToChannel(ch, nil, url, err)
 		}
@@ -88,6 +115,8 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setResolveResponse(apiResponse)
 		case identityResolveWithTagsUrl:
 			setResolveResponseWithTags(apiResponse)
+		case emailVerificationUrl:
+			setEmailVerificationResponse(apiResponse)
 		}
 	}
 	ch <- apiResponse
@@ -241,6 +270,21 @@ func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveR
 	return ch
 }
 
+/* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(email) {
+		go sendToChannel(ch, nil, "", NewFullContactError("email can't be nil"))
+		return ch
+	}
+	reqBytes := []byte(email)
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(emailVerificationUrl, reqBytes, ch)
+	return ch
+}
+
 func setPersonResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
@@ -344,6 +388,27 @@ func setResolveResponseWithTags(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
 	apiResponse.ResolveResponseWithTags = &resolveResponse
+}
+
+func setEmailVerificationResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var emailResponse EmailVerificationResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &emailResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.EmailVerificationResponse = &emailResponse
 }
 
 func min(x, y int) int {
