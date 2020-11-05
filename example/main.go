@@ -144,6 +144,25 @@ func main() {
 		fmt.Println("Record Deleted Successfully!")
 	}
 
+	//Tags Create
+	tagsRequest, err := fc.NewTagsRequest(fc.WithRecordIdForTags("k1"),
+		fc.WithTag(
+			fc.NewTag(fc.WithTagKey("gender"), fc.WithTagValue("male"))))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	resp = <-fcClient.TagsCreate(tagsRequest)
+	fmt.Printf("\n\nTags Create API Response: %v", resp.TagsResponse)
+
+	//Tags Get
+	resp = <-fcClient.TagsGet("k1")
+	fmt.Printf("\n\nTags Get API Response: %v", resp.TagsResponse)
+
+	//Tags Delete
+	resp = <-fcClient.TagsDelete(tagsRequest)
+	fmt.Printf("\n\nTags Delete API Response: %v", resp.Status)
+
 	//Email Verification
 	resp = <-fcClient.EmailVerification("bart@fullcontact.com")
 	fmt.Printf("\n\nEmail Verification API Response: %v", resp)

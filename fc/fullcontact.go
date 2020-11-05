@@ -115,6 +115,8 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setResolveResponse(apiResponse)
 		case identityResolveWithTagsUrl:
 			setResolveResponseWithTags(apiResponse)
+		case tagsCreateUrl, tagsGetUrl, tagsDeleteUrl:
+			setTagsResponse(apiResponse)
 		case emailVerificationUrl:
 			setEmailVerificationResponse(apiResponse)
 		}
@@ -270,6 +272,59 @@ func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveR
 	return ch
 }
 
+/* FullContact API for adding/creating tags for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsCreate(tagsRequest *TagsRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if tagsRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Tags Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(tagsRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsCreateUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for getting all tags for any recordId in your PIC, takes a 'recordId' and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsGet(recordId string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(recordId) {
+		go sendToChannel(ch, nil, "", NewFullContactError("recordId can't be nil"))
+		return ch
+	}
+	reqBytes := []byte("{\"recordId\":\"" + recordId + "\"}")
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsGetUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for deleting any tag(s) for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsDelete(tagsRequest *TagsRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if tagsRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Tags Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(tagsRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsDeleteUrl, reqBytes, ch)
+	return ch
+}
+
 /* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
@@ -388,6 +443,27 @@ func setResolveResponseWithTags(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
 	apiResponse.ResolveResponseWithTags = &resolveResponse
+}
+
+func setTagsResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var tagsResponse TagsResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &tagsResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
+	apiResponse.TagsResponse = &tagsResponse
 }
 
 func setEmailVerificationResponse(apiResponse *APIResponse) {

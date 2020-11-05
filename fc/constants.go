@@ -14,5 +14,8 @@ const (
 	identityResolveUrl         = baseUrl + "identity.resolve"
 	identityResolveWithTagsUrl = baseUrl + "identity.resolve?tags=true"
 	identityDeleteUrl          = baseUrl + "identity.delete"
+	tagsCreateUrl              = baseUrl + "tags.create"
+	tagsGetUrl                 = baseUrl + "tags.get"
+	tagsDeleteUrl              = baseUrl + "tags.delete"
 	emailVerificationUrl       = v2BaseUrl + "verification/email"
 )

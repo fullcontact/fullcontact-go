@@ -13,6 +13,7 @@ type APIResponse struct {
 	ResolveResponse           *ResolveResponse
 	ResolveResponseWithTags   *ResolveResponseWithTags
 	EmailVerificationResponse *EmailVerificationResponse
+	TagsResponse              *TagsResponse
 	StatusCode                int
 	Status                    string
 	IsSuccessful              bool
@@ -21,8 +22,9 @@ type APIResponse struct {
 
 func (resp *APIResponse) String() string {
 	return fmt.Sprintf("\nRawHttpResponse: %v,\nPersonResponse: %v,\nCompanyResponse: %v,\nCompanySearchResponse: %v,"+
-		"\nResolveResponse: %v,\nResolveResponseWithTags: %v,\nEmailVerificationResponse: %v,\nStatusCode: %v,\nStatus: %v,"+
-		"\nIsSuccessful: %v,\nErr: %v\n",
+		"\nResolveResponse: %v,\nResolveResponseWithTags: %v,\nTagsResponse: %v,\nEmailVerificationResponse: %v,"+
+		"\nStatusCode: %v,\nStatus: %v,\nIsSuccessful: %v,\nErr: %v\n",
 		resp.RawHttpResponse, resp.PersonResponse, resp.CompanyResponse, resp.CompanySearchResponse, resp.ResolveResponse,
-		resp.ResolveResponseWithTags, resp.EmailVerificationResponse, resp.StatusCode, resp.Status, resp.IsSuccessful, resp.Err)
+		resp.ResolveResponseWithTags, resp.TagsResponse, resp.EmailVerificationResponse, resp.StatusCode, resp.Status,
+		resp.IsSuccessful, resp.Err)
 }

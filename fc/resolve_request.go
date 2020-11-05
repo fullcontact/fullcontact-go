@@ -206,7 +206,7 @@ func WithTagForResolve(tag *Tag) ResolveRequestOption {
 	}
 }
 
-func WithTagssForResolve(tags []*Tag) ResolveRequestOption {
+func WithTagsForResolve(tags []*Tag) ResolveRequestOption {
 	return func(resolveRequest *ResolveRequest) {
 		if resolveRequest.Tags == nil {
 			resolveRequest.Tags = make([]*Tag, 0)
