@@ -17,5 +17,7 @@ const (
 	tagsCreateUrl              = baseUrl + "tags.create"
 	tagsGetUrl                 = baseUrl + "tags.get"
 	tagsDeleteUrl              = baseUrl + "tags.delete"
+	audienceCreateUrl          = baseUrl + "audience.create"
+	audienceDownloadUrl        = baseUrl + "audience.download"
 	emailVerificationUrl       = v2BaseUrl + "verification/email"
 )

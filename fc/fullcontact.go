@@ -41,6 +41,7 @@ func (fcClient *fullContactClient) newHttpGetRequest(url string, query string) (
 func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIResponse) {
 	var req *http.Request
 	var err error
+	//construct for HTTP GET requests
 	if url == emailVerificationUrl {
 		req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
 	} else {
@@ -117,6 +118,8 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setResolveResponseWithTags(apiResponse)
 		case tagsCreateUrl, tagsGetUrl, tagsDeleteUrl:
 			setTagsResponse(apiResponse)
+		case audienceCreateUrl, audienceDownloadUrl:
+			setAudienceResponse(apiResponse)
 		case emailVerificationUrl:
 			setEmailVerificationResponse(apiResponse)
 		}
@@ -325,6 +328,25 @@ func (fcClient *fullContactClient) TagsDelete(tagsRequest *TagsRequest) chan *AP
 	return ch
 }
 
+/* FullContact API for creating Audience based on tags from your PIC, takes a AudienceRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) AudienceCreate(audienceRequest *AudienceRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if audienceRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Audience Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(audienceRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(audienceCreateUrl, reqBytes, ch)
+	return ch
+}
+
 /* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
@@ -464,6 +486,27 @@ func setTagsResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
 	apiResponse.TagsResponse = &tagsResponse
+}
+
+func setAudienceResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var audienceResponse AudienceResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &audienceResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.AudienceResponse = &audienceResponse
 }
 
 func setEmailVerificationResponse(apiResponse *APIResponse) {

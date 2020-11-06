@@ -2,6 +2,8 @@ package fullcontact
 
 import "strings"
 
+//Tags
+
 type TagOptions func(*Tag)
 
 type Tag struct {
@@ -35,6 +37,8 @@ func (tag *Tag) isValid() bool {
 	return isPopulated(tag.Key) && isPopulated(tag.Value) && !strings.Contains(tag.Key, "'")
 }
 
+//Tags Request
+
 type TagsRequestOption func(tr *TagsRequest)
 
 type TagsRequest struct {
@@ -58,6 +62,9 @@ func NewTagsRequest(option ...TagsRequestOption) (*TagsRequest, error) {
 func validateTagsRequest(tagsRequest *TagsRequest) error {
 	if !isPopulated(tagsRequest.RecordId) {
 		return NewFullContactError("RecordId must be present for creating Tags")
+	}
+	if len(tagsRequest.Tags) < 1 {
+		return NewFullContactError("Tags must be populated in Tags Create request")
 	}
 	for _, tag := range tagsRequest.Tags {
 		if !tag.isValid() {
@@ -90,6 +97,8 @@ func WithRecordIdForTags(recordId string) TagsRequestOption {
 		tagsRequest.RecordId = recordId
 	}
 }
+
+//Tags Response
 
 type TagsResponse struct {
 	RecordId  string `json:"recordId"`
