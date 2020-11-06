@@ -1,5 +1,10 @@
 package fullcontact
 
+import (
+	"os"
+	"strings"
+)
+
 //Audience Request
 
 type AudienceRequestOption func(ar *AudienceRequest)
@@ -66,4 +71,20 @@ func WithTagsForAudience(tags []*Tag) AudienceRequestOption {
 type AudienceResponse struct {
 	RequestId     string `json:"requestId"`
 	AudienceBytes []byte
+}
+
+func (audienceResponse AudienceResponse) WriteAudienceBytesToFile(fileName string) error {
+	if !strings.HasSuffix(fileName, ".json.gz") {
+		fileName = fileName + ".json.gz"
+	}
+	audienceFile, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer audienceFile.Close()
+	_, err = audienceFile.Write(audienceResponse.AudienceBytes)
+	if err != nil {
+		return err
+	}
+	return nil
 }

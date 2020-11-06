@@ -44,6 +44,8 @@ func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIR
 	//construct for HTTP GET requests
 	if url == emailVerificationUrl {
 		req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
+	} else if url == audienceDownloadUrl {
+		req, err = fcClient.newHttpGetRequest(url, "requestId="+string(reqBytes))
 	} else {
 		req, err = fcClient.newHttpRequest(url, reqBytes)
 	}
@@ -70,6 +72,8 @@ func (fcClient *fullContactClient) autoRetry(ch chan *APIResponse, err error, re
 		var err error
 		if url == emailVerificationUrl {
 			req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
+		} else if url == audienceDownloadUrl {
+			req, err = fcClient.newHttpGetRequest(url, "requestId="+string(reqBytes))
 		} else {
 			req, err = fcClient.newHttpRequest(url, reqBytes)
 		}
@@ -347,6 +351,21 @@ func (fcClient *fullContactClient) AudienceCreate(audienceRequest *AudienceReque
 	return ch
 }
 
+/* FullContact API for downloading Audience created using 'AudienceCreate', takes a requestId and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(requestId) {
+		go sendToChannel(ch, nil, "", NewFullContactError("requestId can't be nil"))
+		return ch
+	}
+	reqBytes := []byte(requestId)
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(audienceDownloadUrl, reqBytes, ch)
+	return ch
+}
+
 /* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
@@ -489,6 +508,7 @@ func setTagsResponse(apiResponse *APIResponse) {
 }
 
 func setAudienceResponse(apiResponse *APIResponse) {
+	contentType := apiResponse.RawHttpResponse.Header.Get("Content-Type")
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
 	if err != nil {
@@ -497,10 +517,14 @@ func setAudienceResponse(apiResponse *APIResponse) {
 	}
 	var audienceResponse AudienceResponse
 	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &audienceResponse)
-		if err != nil {
-			apiResponse.Err = err
-			return
+		if contentType == "application/octet-stream" {
+			audienceResponse.AudienceBytes = bodyBytes
+		} else {
+			err = json.Unmarshal(bodyBytes, &audienceResponse)
+			if err != nil {
+				apiResponse.Err = err
+				return
+			}
 		}
 	}
 	apiResponse.Status = apiResponse.RawHttpResponse.Status

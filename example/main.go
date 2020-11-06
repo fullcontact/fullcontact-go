@@ -163,6 +163,28 @@ func main() {
 	resp = <-fcClient.TagsDelete(tagsRequest)
 	fmt.Printf("\n\nTags Delete API Response: %v", resp.Status)
 
+	//Audience Create
+	audienceRequest, err := fc.NewAudienceRequest(fc.WithWebhookUrlForAudience("your-webhookUrl"),
+		fc.WithTagForAudience(fc.NewTag(fc.WithTagKey("gender"), fc.WithTagValue("male"))))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	resp = <-fcClient.AudienceCreate(audienceRequest)
+	fmt.Printf("\n\nAudience Create API Response: %v", resp.AudienceResponse)
+	if resp.IsSuccessful {
+		fmt.Println(resp.AudienceResponse.RequestId)
+	}
+
+	//Audience Download
+	requestId := "730000fd-009a-00fc-8008-100e000085f0"
+	resp = <-fcClient.AudienceDownload(requestId)
+	fmt.Printf("\n\nAudience Download API Response: %v", resp.AudienceResponse)
+	if resp.IsSuccessful {
+		fmt.Println(resp.AudienceResponse.WriteAudienceBytesToFile(requestId + "_audienceFile.json.gz"))
+	}
+
 	//Email Verification
 	resp = <-fcClient.EmailVerification("bart@fullcontact.com")
 	fmt.Printf("\n\nEmail Verification API Response: %v", resp)
