@@ -1,7 +1,7 @@
 package fullcontact
 
 const (
-	version                    = "1.0.0"
+	version                    = "1.1.0"
 	userAgent                  = "FullContact_Go_Client_V" + version
 	FcApiKey                   = "FC_API_KEY"
 	FCGoClientTestType         = "FCGoClientTestType"
