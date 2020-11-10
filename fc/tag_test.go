@@ -28,6 +28,11 @@ func TestNewTagsRequestInvalid3(t *testing.T) {
 	assert.EqualError(t, err, "FullContactError: Both Key and Value must be populated for adding a Tag")
 }
 
+func TestNewTagsRequestInvalid4(t *testing.T) {
+	_, err := NewTagsRequest(WithRecordIdForTags("k1"))
+	assert.EqualError(t, err, "FullContactError: Tags must be populated in Tags Create request")
+}
+
 func TestTagsCreate(t *testing.T) {
 	ch := make(chan *APIResponse)
 	respJson := "{\"recordId\":\"k3\",\"tags\":[{\"key\":\"gender\",\"value\":\"female\"}]}"
