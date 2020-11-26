@@ -5,7 +5,7 @@ type PersonRequestOption func(pr *PersonRequest)
 type PersonRequest struct {
 	Emails     []string    `json:"emails,omitempty"`
 	Phones     []string    `json:"phones,omitempty"`
-	DataFilter []string    `json:"dataFilters,omitempty"`
+	DataFilter []string    `json:"dataFilter,omitempty"`
 	Maid       []string    `json:"maids,omitempty"`
 	Location   *Location   `json:"location,omitempty"`
 	Name       *PersonName `json:"name,omitempty"`

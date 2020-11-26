@@ -13,12 +13,7 @@ func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (
 	if err != nil {
 		return nil, err
 	}
-	for k, v := range fcClient.headers {
-		req.Header.Add(k, v)
-	}
-	req.Header.Add("Authorization", "Bearer "+fcClient.credentialsProvider.getApiKey())
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", userAgent)
+	req = fcClient.addHeaders(req)
 	return req, nil
 
 }
@@ -28,25 +23,40 @@ func (fcClient *fullContactClient) newHttpGetRequest(url string, query string) (
 	if err != nil {
 		return nil, err
 	}
+	req = fcClient.addHeaders(req)
+	return req, nil
+
+}
+
+func (fcClient *fullContactClient) addHeaders(req *http.Request) *http.Request {
 	for k, v := range fcClient.headers {
 		req.Header.Add(k, v)
 	}
 	req.Header.Add("Authorization", "Bearer "+fcClient.credentialsProvider.getApiKey())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("User-Agent", userAgent)
-	return req, nil
+	return req
+}
 
+func isHttpGet(url string) bool {
+	// Add urls to below list for HTTP GET request
+	getUrlList := []string{emailVerificationUrl, audienceDownloadUrl}
+
+	for _, getUrl := range getUrlList {
+		if url == getUrl {
+			return true
+		}
+	}
+	return false
 }
 
 func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIResponse) {
 	var req *http.Request
 	var err error
 	//construct for HTTP GET requests
-	if url == emailVerificationUrl {
-		req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
-	} else if url == audienceDownloadUrl {
-		req, err = fcClient.newHttpGetRequest(url, "requestId="+string(reqBytes))
-	} else {
+	if isHttpGet(url) {
+		req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
+	} else { //POST
 		req, err = fcClient.newHttpRequest(url, reqBytes)
 	}
 	if err != nil {
@@ -70,11 +80,9 @@ func (fcClient *fullContactClient) autoRetry(ch chan *APIResponse, err error, re
 		time.Sleep(time.Duration(fcClient.retryHandler.RetryDelayMillis()*(1<<(retryAttemptsDone-1))) * time.Millisecond)
 		var req *http.Request
 		var err error
-		if url == emailVerificationUrl {
-			req, err = fcClient.newHttpGetRequest(url, "email="+string(reqBytes))
-		} else if url == audienceDownloadUrl {
-			req, err = fcClient.newHttpGetRequest(url, "requestId="+string(reqBytes))
-		} else {
+		if isHttpGet(url) {
+			req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
+		} else { //POST
 			req, err = fcClient.newHttpRequest(url, reqBytes)
 		}
 		if err != nil {
@@ -359,7 +367,7 @@ func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIR
 		go sendToChannel(ch, nil, "", NewFullContactError("requestId can't be nil"))
 		return ch
 	}
-	reqBytes := []byte(requestId)
+	reqBytes := []byte("requestId=" + requestId)
 
 	// Send Asynchronous Request in Goroutine
 	go fcClient.do(audienceDownloadUrl, reqBytes, ch)
@@ -374,7 +382,7 @@ func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResp
 		go sendToChannel(ch, nil, "", NewFullContactError("email can't be nil"))
 		return ch
 	}
-	reqBytes := []byte(email)
+	reqBytes := []byte("email=" + email)
 
 	// Send Asynchronous Request in Goroutine
 	go fcClient.do(emailVerificationUrl, reqBytes, ch)
