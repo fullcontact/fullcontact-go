@@ -31,7 +31,7 @@ Client with your API Key, make a enrich request and get a response object back.
 
 ### Quick Overview
 If you are not familiar with the Enrich API, complete details can be found 
-@[API documentation](https://www.fullcontact.com/developer/docs/) 
+@[API documentation](https://platform.fullcontact.com/docs/apis/enrich/introduction) 
 
 
 FullContact Client provides an object layer to FullContact API communication, 
@@ -42,11 +42,11 @@ Once you’re on board with the API behavior, FullContact Client library should 
 your integration.
 
 ### Supported APIs
-- _[Enrich](https://dashboard.fullcontact.com/api-ref#enrich)_
+- _[Enrich](https://platform.fullcontact.com/docs/apis/enrich/introduction)_
     - `person.enrich`
     - `company.enrich`
     - `company.search`
-- _[Resolve](https://dashboard.fullcontact.com/api-ref#resolve-2)_
+- _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
     - `identity.map`
     - `identity.resolve`
     - `identity.delete`
@@ -109,7 +109,7 @@ fcClient, err := fc.NewFullContactClient(
 		fc.WithTimeout(3000))
 ```
 ## Enrich
-[Enrich API Reference](https://dashboard.fullcontact.com/api-ref#enrich)
+[Enrich API Reference](https://platform.fullcontact.com/docs/apis/enrich/introduction)
 - `person.enrich`
 - `company.enrich`
 - `company.search`
@@ -241,7 +241,7 @@ if resp.IsSuccessful {
 ```
 
 ## Resolve
-[Resolve API Reference](https://dashboard.fullcontact.com/api-ref#resolve-2)
+[Resolve API Reference](https://platform.fullcontact.com/docs/apis/resolve/introduction)
 - `identity.map`
 - `identity.resolve`
 - `identity.delete`
