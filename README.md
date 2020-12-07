@@ -1,4 +1,7 @@
 ## FullContact Go Client
+[![GoDoc](https://godoc.org/github.com/fullcontact/fullcontact-go/fc?status.svg)](https://godoc.org/github.com/fullcontact/fullcontact-go/fc)
+
+
 The official [FullContact](https://www.fullcontact.com/) Golang Client Library for the FullContact V3 APIs.
 
 ## Installation
@@ -43,6 +46,7 @@ your integration.
     - `person.enrich`
     - `company.enrich`
     - `company.search`
+
 - Private Identity Cloud
     - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
         - `identity.map`
@@ -57,6 +61,11 @@ your integration.
         - `audience.download`
 - _[Verification](https://platform.fullcontact.com/docs/apis/verification/introduction)_
     - `v2/verification/email`
+
+- _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
+    - `identity.map`
+    - `identity.resolve`
+    - `identity.delete`
 
 ## Providing Authentication to FullContact Client
 FullContact client uses ```CredentialsProvider``` interface for Authentication. Different ways 
@@ -431,3 +440,4 @@ if resp.IsSuccessful {
     fmt.Println(resp.EmailVerificationResponse)
 }
 ```
+
