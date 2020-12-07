@@ -47,7 +47,7 @@ func TestNewResolveRequestWithNameOnly(t *testing.T) {
 		WithNameForResolve(&PersonName{
 			Full: "Marian C Reed",
 		}))
-	assert.Errorf(t, err, "If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewResolveRequestWithLocationOnly(t *testing.T) {
@@ -60,45 +60,49 @@ func TestNewResolveRequestWithLocationOnly(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	assert.Errorf(t, err, "If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewResolveRequestWithLocationWithoutAddressLine1(t *testing.T) {
 	_, err := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine2("Some Street"),
 			WithCity("Denver"),
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	assert.Errorf(t, err, "Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewResolveRequestWithLocationOnlyAddressLine1(t *testing.T) {
 	_, err := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"))))
-	assert.Errorf(t, err, "Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewResolveRequestWithLocationWithAddressLine1AndCity(t *testing.T) {
 	_, err := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
-	assert.Errorf(t, err, "Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewResolveRequestWithLocationWithAddressLine1AndRegion(t *testing.T) {
 	_, err := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
-	assert.Errorf(t, err, "Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewResolveRequestWithValidLocation1(t *testing.T) {
@@ -145,7 +149,7 @@ func TestNilIdentityMapRequest(t *testing.T) {
 	ch := fcTestClient.IdentityMap(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Resolve Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Resolve Request can't be nil")
 }
 
 func TestNilIdentityResolveRequest(t *testing.T) {
@@ -153,7 +157,7 @@ func TestNilIdentityResolveRequest(t *testing.T) {
 	ch := fcTestClient.IdentityResolve(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Resolve Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Resolve Request can't be nil")
 }
 
 func TestNilIdentityDeleteRequest(t *testing.T) {
@@ -161,7 +165,7 @@ func TestNilIdentityDeleteRequest(t *testing.T) {
 	ch := fcTestClient.IdentityDelete(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Resolve Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Resolve Request can't be nil")
 }
 
 func TestInvalidIdentityMapRequest1(t *testing.T) {
@@ -170,7 +174,7 @@ func TestInvalidIdentityMapRequest1(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.IdentityMap(rr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Invalid map request, person id must be empty")
+	assert.EqualError(t, resp.Err, "FullContactError: Invalid map request, person id must be empty")
 }
 
 func TestInvalidIdentityMapRequest2(t *testing.T) {
@@ -179,7 +183,7 @@ func TestInvalidIdentityMapRequest2(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.IdentityMap(rr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
+	assert.EqualError(t, resp.Err, "FullContactError: Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
 }
 
 func TestInvalidIdentityResolveRequest(t *testing.T) {
@@ -188,7 +192,7 @@ func TestInvalidIdentityResolveRequest(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.IdentityResolve(rr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: Both record id and person id are populated, please select one")
+	assert.EqualError(t, resp.Err, "FullContactError: Both record id and person id are populated, please select one")
 }
 
 func TestInvalidIdentityDeleteRequest(t *testing.T) {
@@ -197,5 +201,32 @@ func TestInvalidIdentityDeleteRequest(t *testing.T) {
 	assert.NoError(t, err)
 	resp := <-fcTestClient.IdentityDelete(rr)
 	assert.False(t, resp.IsSuccessful)
-	assert.Errorf(t, resp.Err, "FullContactError: recordId param must be specified")
+	assert.EqualError(t, resp.Err, "FullContactError: recordId param must be specified")
+}
+
+func TestInvalidMapTagRequest1(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	rr, err := NewResolveRequest(WithRecordIdForResolve("recordId"), WithTagForResolve(NewTag(WithTagKey("key"))))
+	assert.NoError(t, err)
+	resp := <-fcTestClient.IdentityMap(rr)
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Both Key and Value must be populated for adding a Tag")
+}
+
+func TestInvalidMapTagRequest2(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	rr, err := NewResolveRequest(WithRecordIdForResolve("recordId"), WithTagForResolve(NewTag(WithTagValue("value"))))
+	assert.NoError(t, err)
+	resp := <-fcTestClient.IdentityMap(rr)
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Both Key and Value must be populated for adding a Tag")
+}
+
+func TestInvalidMapTagRequest3(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	rr, err := NewResolveRequest(WithRecordIdForResolve("recordId"), WithTagForResolve(NewTag(WithTagKey("ke'y"), WithTagValue("value"))))
+	assert.NoError(t, err)
+	resp := <-fcTestClient.IdentityMap(rr)
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Both Key and Value must be populated for adding a Tag")
 }

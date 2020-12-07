@@ -13,18 +13,52 @@ func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (
 	if err != nil {
 		return nil, err
 	}
+	req = fcClient.addHeaders(req)
+	return req, nil
+
+}
+
+func (fcClient *fullContactClient) newHttpGetRequest(url string, query string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url+"?"+query, nil)
+	if err != nil {
+		return nil, err
+	}
+	req = fcClient.addHeaders(req)
+	return req, nil
+
+}
+
+func (fcClient *fullContactClient) addHeaders(req *http.Request) *http.Request {
 	for k, v := range fcClient.headers {
 		req.Header.Add(k, v)
 	}
 	req.Header.Add("Authorization", "Bearer "+fcClient.credentialsProvider.getApiKey())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("User-Agent", userAgent)
-	return req, nil
+	return req
+}
 
+func isHttpGet(url string) bool {
+	// Add urls to below list for HTTP GET request
+	getUrlList := []string{emailVerificationUrl, audienceDownloadUrl}
+
+	for _, getUrl := range getUrlList {
+		if url == getUrl {
+			return true
+		}
+	}
+	return false
 }
 
 func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIResponse) {
-	req, err := fcClient.newHttpRequest(url, reqBytes)
+	var req *http.Request
+	var err error
+	//construct for HTTP GET requests
+	if isHttpGet(url) {
+		req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
+	} else { //POST
+		req, err = fcClient.newHttpRequest(url, reqBytes)
+	}
 	if err != nil {
 		sendToChannel(ch, nil, url, err)
 	}
@@ -44,7 +78,13 @@ func (fcClient *fullContactClient) autoRetry(ch chan *APIResponse, err error, re
 	if retryAttemptsDone < min(fcClient.retryHandler.RetryAttempts(), 5) {
 		retryAttemptsDone++
 		time.Sleep(time.Duration(fcClient.retryHandler.RetryDelayMillis()*(1<<(retryAttemptsDone-1))) * time.Millisecond)
-		req, err := fcClient.newHttpRequest(url, reqBytes)
+		var req *http.Request
+		var err error
+		if isHttpGet(url) {
+			req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
+		} else { //POST
+			req, err = fcClient.newHttpRequest(url, reqBytes)
+		}
 		if err != nil {
 			sendToChannel(ch, nil, url, err)
 		}
@@ -86,6 +126,14 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setCompanySearchResponse(apiResponse)
 		case identityMapUrl, identityResolveUrl, identityDeleteUrl:
 			setResolveResponse(apiResponse)
+		case identityResolveWithTagsUrl:
+			setResolveResponseWithTags(apiResponse)
+		case tagsCreateUrl, tagsGetUrl, tagsDeleteUrl:
+			setTagsResponse(apiResponse)
+		case audienceCreateUrl, audienceDownloadUrl:
+			setAudienceResponse(apiResponse)
+		case emailVerificationUrl:
+			setEmailVerificationResponse(apiResponse)
 		}
 	}
 	ch <- apiResponse
@@ -194,6 +242,23 @@ func (fcClient *fullContactClient) IdentityResolve(resolveRequest *ResolveReques
 }
 
 /* Resolve
+FullContact Resolve API - IdentityResolve with Tags in response, takes an ResolveRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) IdentityResolveWithTags(resolveRequest *ResolveRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if resolveRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Resolve Request can't be nil"))
+		return ch
+	}
+	err := validateForIdentityResolve(resolveRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	return fcClient.resolveRequest(ch, resolveRequest, identityResolveWithTagsUrl)
+}
+
+/* Resolve
 FullContact Resolve API - IdentityDelete, takes an ResolveRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) IdentityDelete(resolveRequest *ResolveRequest) chan *APIResponse {
@@ -219,6 +284,108 @@ func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveR
 	}
 	// Send Asynchronous Request in Goroutine
 	go fcClient.do(url, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for adding/creating tags for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsCreate(tagsRequest *TagsRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if tagsRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Tags Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(tagsRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsCreateUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for getting all tags for any recordId in your PIC, takes a 'recordId' and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsGet(recordId string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(recordId) {
+		go sendToChannel(ch, nil, "", NewFullContactError("recordId can't be nil"))
+		return ch
+	}
+	reqBytes := []byte("{\"recordId\":\"" + recordId + "\"}")
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsGetUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for deleting any tag(s) for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) TagsDelete(tagsRequest *TagsRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if tagsRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Tags Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(tagsRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(tagsDeleteUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for creating Audience based on tags from your PIC, takes a AudienceRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) AudienceCreate(audienceRequest *AudienceRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if audienceRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Audience Request can't be nil"))
+		return ch
+	}
+	reqBytes, err := json.Marshal(audienceRequest)
+
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(audienceCreateUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact API for downloading Audience created using 'AudienceCreate', takes a requestId and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(requestId) {
+		go sendToChannel(ch, nil, "", NewFullContactError("requestId can't be nil"))
+		return ch
+	}
+	reqBytes := []byte("requestId=" + requestId)
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(audienceDownloadUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if !isPopulated(email) {
+		go sendToChannel(ch, nil, "", NewFullContactError("email can't be nil"))
+		return ch
+	}
+	reqBytes := []byte("email=" + email)
+
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(emailVerificationUrl, reqBytes, ch)
 	return ch
 }
 
@@ -304,6 +471,95 @@ func setResolveResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
 	apiResponse.ResolveResponse = &resolveResponse
+}
+
+func setResolveResponseWithTags(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var resolveResponse ResolveResponseWithTags
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &resolveResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
+	apiResponse.ResolveResponseWithTags = &resolveResponse
+}
+
+func setTagsResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var tagsResponse TagsResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &tagsResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 204) || (apiResponse.StatusCode == 404)
+	apiResponse.TagsResponse = &tagsResponse
+}
+
+func setAudienceResponse(apiResponse *APIResponse) {
+	contentType := apiResponse.RawHttpResponse.Header.Get("Content-Type")
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var audienceResponse AudienceResponse
+	if isPopulated(string(bodyBytes)) {
+		if contentType == "application/octet-stream" {
+			audienceResponse.AudienceBytes = bodyBytes
+		} else {
+			err = json.Unmarshal(bodyBytes, &audienceResponse)
+			if err != nil {
+				apiResponse.Err = err
+				return
+			}
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.AudienceResponse = &audienceResponse
+}
+
+func setEmailVerificationResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var emailResponse EmailVerificationResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &emailResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.EmailVerificationResponse = &emailResponse
 }
 
 func min(x, y int) int {

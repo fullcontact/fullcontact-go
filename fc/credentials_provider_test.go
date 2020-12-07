@@ -14,7 +14,7 @@ func TestNewStaticCredentialsProvider(t *testing.T) {
 
 func TestNewStaticCredentialsProviderWithEmptyKey(t *testing.T) {
 	_, err := NewStaticCredentialsProvider("")
-	assert.Errorf(t, err, "API Key can't be empty")
+	assert.EqualError(t, err, "FullContactError: API Key can't be empty")
 }
 
 func TestNewDefaultCredentialsProvider(t *testing.T) {
@@ -29,5 +29,5 @@ func TestNewDefaultCredentialsProvider(t *testing.T) {
 
 func TestNewDefaultCredentialsProviderWithoutEnv(t *testing.T) {
 	_, err := NewDefaultCredentialsProvider(FcApiKey)
-	assert.Errorf(t, err, "Couldn't find valid API Key from ENV variable: FC_API_KEY")
+	assert.EqualError(t, err, "FullContactError: Couldn't find valid API Key from ENV variable: FC_API_KEY")
 }

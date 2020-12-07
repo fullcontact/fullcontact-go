@@ -23,10 +23,10 @@ go get -u github.com/fullcontact/fullcontact-go/fc
 ```
 
 ## Working with FullContact Client
-FullContact client supports v3 Enrich APIs which are super simplified to easily 
-enrich Person and Company data. All the API requests are over HTTPS using POST method 
-with content sent as JSON. This library supports Multi Field Request, Person Enrichment 
-& Data Packs, Company Enrichment & Data Packs and Webhooks. Just build a FullContact 
+FullContact client supports v3 Enrich and Resolve APIs which are super simplified to easily 
+enrich Person and Company data and Resolve fragmented customer data. All the API requests are over HTTPS 
+using POST method with content sent as JSON. This library supports Multi Field Request, 
+Person Enrichment & Data Packs, Company Enrichment & Data Packs and Webhooks. Just build a FullContact 
 Client with your API Key, make a enrich request and get a response object back.
 
 ### Quick Overview
@@ -46,6 +46,22 @@ your integration.
     - `person.enrich`
     - `company.enrich`
     - `company.search`
+
+- Private Identity Cloud
+    - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
+        - `identity.map`
+        - `identity.resolve`
+        - `identity.delete`
+    - [Tags](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+        - `tags.create`
+        - `tags.get`
+        - `tags.delete`
+    - [Audience](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+        - `audience.create`
+        - `audience.download`
+- _[Verification](https://platform.fullcontact.com/docs/apis/verification/introduction)_
+    - `v2/verification/email`
+
 - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
     - `identity.map`
     - `identity.resolve`
@@ -144,9 +160,11 @@ such as:
 - `Maids`: _[]string_
 - `Confidence`: _string_
 - `Infer`: _bool_
-- `EebhookUrl`: _string_
+- `WebhookUrl`: _string_
 - `RecordId`: _string_
 - `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
 
 
 ```go
@@ -277,8 +295,11 @@ such as:
     - `Userid`: _string_
     - `Url`: _string_
 - `Maids`: _[]string_
+- `Tags`: _[]*Tag_
 - `RecordId`: _string_
 - `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
 
 ```go
 resolveRequest, err := fc.NewResolveRequest(
@@ -307,3 +328,116 @@ if resp.IsSuccessful {
     fmt.Println("Record Deleted Successfully!")
 }
 ```
+
+### Tags/Metadata
+
+[Tags API Reference](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+- `tags.create`
+- `tags.get`
+- `tags.delete`
+
+FullContact provides the ability to store customer tags/metadata to each record within a customer's Private Identity 
+Cloud for continuous updates, retrievals and deletes across both 1st party as well as 2nd party data partnerships.
+
+#### Creating Tags
+Tags can be added while mapping records using `identity.map` API or later using `tags.create` API. 
+Once a Customer Record ID has been mapped, customer tags can continue to be added to the originally provided Record ID
+
+##### Tags Request
+- Request Parameters:
+    - `RecordId`: _string_
+    - `Tags`: _[]*Tag_
+        - `Key`: _string_
+        - `Value`: _string_
+       
+```go
+tagsRequest, err := fc.NewTagsRequest(fc.WithRecordIdForTags("k1"),
+		fc.WithTag(fc.NewTag(fc.WithTagKey("gender"), fc.WithTagValue("male"))))
+if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+// Sending Request
+resp := <-fcClient.TagsCreate(tagsRequest)
+fmt.Printf("\n\nTags Create API Response: %v", resp.TagsResponse)
+```
+
+#### Get Tags
+This will return all customer tags that are associated to a mapped record using `recordId`.
+
+```java
+resp := <-fcClient.TagsGet("recordId")
+	fmt.Printf("\n\nTags Get API Response: %v", resp.TagsResponse)
+```
+
+#### Delete Tags
+This will remove specific or all customer tags that are attached to a mapped record.
+
+```go
+tagsRequest, err := fc.NewTagsRequest(fc.WithRecordIdForTags("k1"),
+		fc.WithTag(fc.NewTag(fc.WithTagKey("gender"), fc.WithTagValue("male"))))
+if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+// Sending Request
+resp := <-fcClient.TagsDelete(tagsRequest)
+	fmt.Printf("\n\nTags Delete API Response: %v", resp.Status)
+```
+
+### Audience
+- `audience.create`
+- `audience.download`
+
+This endpoint can be used in order to obtain multiple individuals based upon the key, value 
+tag inputs (both are required as input) in order to suppress or take action upon certain audiences 
+for data onboarding or audience analysis.
+
+#### Audience Create
+The Audience Creation endpoint requires a at least one `Tag` and valid `webhookURL` to be present in order to 
+send a message when the audience creation is complete and ready to be downloaded.
+
+```go
+audienceRequest, err := fc.NewAudienceRequest(fc.WithWebhookUrlForAudience("your-webhookUrl"),
+		fc.WithTagForAudience(fc.NewTag(fc.WithTagKey("gender"), fc.WithTagValue("male"))))
+if err != nil {
+    log.Fatalln(err)
+    return
+}
+
+resp := <-fcClient.AudienceCreate(audienceRequest)
+fmt.Printf("\n\nAudience Create API Response: %v", resp.AudienceResponse)
+if resp.IsSuccessful {
+    fmt.Println(resp.AudienceResponse.RequestId)
+}
+```
+
+#### Audience Download
+When `audience.create` result is ready, `requestId` from its response can be used to download the audience data.
+A utility method is provided `WriteAudienceBytesToFile(fileName string)` which generates a file in `json.gz` format
+with audience data bytes.
+```go
+requestId := "730000fd-009a-00fc-8008-100e000085f0"  //From the response of 'AudienceCreate'
+resp := <-fcClient.AudienceDownload(requestId)
+fmt.Printf("\n\nAudience Download API Response: %v", resp.AudienceResponse)
+if resp.IsSuccessful {
+    resp.AudienceResponse.WriteAudienceBytesToFile(requestId + "_audienceFile.json.gz")
+}
+```
+
+## Verification
+[EmailVerification API Reference](https://platform.fullcontact.com/docs/apis/verification/introduction)
+- `v2/verification/email`
+
+FullContact Email Verification API accepts single `email` request, as a `string`. Requests are sent 
+using HTTP GET and request email is set as a query parameter.
+```go
+resp := <-fcClient.EmailVerification("bart@fullcontact.com")
+fmt.Printf("\n\nEmail Verification API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Println(resp.EmailVerificationResponse)
+}
+```
+

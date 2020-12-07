@@ -51,7 +51,7 @@ func TestNewFullContactClientWithoutAuth(t *testing.T) {
 	_, err := NewFullContactClient(
 		WithHeaders(map[string]string{"Reporting-Key": "FC_GoClient"}),
 		WithTimeout(3000))
-	assert.Errorf(t, err, "Couldn't find valid API Key from ENV variable: FC_API_KEY")
+	assert.EqualError(t, err, "FullContactError: Couldn't find valid API Key from ENV variable: FC_API_KEY")
 }
 
 func TestNewFullContactClientWithAuth(t *testing.T) {

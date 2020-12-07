@@ -3,14 +3,17 @@ package fullcontact
 type ResolveRequestOption func(pr *ResolveRequest)
 
 type ResolveRequest struct {
-	Emails   []string    `json:"emails,omitempty"`
-	Phones   []string    `json:"phones,omitempty"`
-	Maid     []string    `json:"maids,omitempty"`
-	Location *Location   `json:"location,omitempty"`
-	Name     *PersonName `json:"name,omitempty"`
-	Profiles []*Profile  `json:"profiles,omitempty"`
-	RecordId string      `json:"recordId,omitempty"`
-	PersonId string      `json:"personId,omitempty"`
+	Emails    []string    `json:"emails,omitempty"`
+	Phones    []string    `json:"phones,omitempty"`
+	Maid      []string    `json:"maids,omitempty"`
+	Location  *Location   `json:"location,omitempty"`
+	Name      *PersonName `json:"name,omitempty"`
+	Profiles  []*Profile  `json:"profiles,omitempty"`
+	RecordId  string      `json:"recordId,omitempty"`
+	PersonId  string      `json:"personId,omitempty"`
+	PartnerId string      `json:"partnerId,omitempty"`
+	LiNonId   string      `json:"li_nonid,omitempty"`
+	Tags      []*Tag      `json:"tags,omitempty"`
 }
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
@@ -54,6 +57,13 @@ func validateResolveRequest(resolveRequest *ResolveRequest) error {
 func validateForIdentityMap(request *ResolveRequest) error {
 	if isPopulated(request.PersonId) {
 		return NewFullContactError("Invalid map request, person id must be empty")
+	}
+	if request.Tags != nil {
+		for _, tag := range request.Tags {
+			if !tag.isValid() {
+				return NewFullContactError("Both Key and Value must be populated for adding a Tag")
+			}
+		}
 	}
 	if (request.Name != nil && request.Location != nil) ||
 		request.Emails != nil ||
@@ -151,6 +161,18 @@ func WithPersonIdForResolve(personId string) ResolveRequestOption {
 	}
 }
 
+func WithPartnerIdForResolve(partnerId string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.PartnerId = partnerId
+	}
+}
+
+func WithLiNonIdForResolve(liNonId string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.LiNonId = liNonId
+	}
+}
+
 func WithNameForResolve(name *PersonName) ResolveRequestOption {
 	return func(resolveRequest *ResolveRequest) {
 		resolveRequest.Name = name
@@ -172,5 +194,23 @@ func WithProfilesForResolve(profiles []*Profile) ResolveRequestOption {
 			resolveRequest.Profiles = make([]*Profile, 0)
 		}
 		resolveRequest.Profiles = append(resolveRequest.Profiles, profiles...)
+	}
+}
+
+func WithTagForResolve(tag *Tag) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		if resolveRequest.Tags == nil {
+			resolveRequest.Tags = make([]*Tag, 0)
+		}
+		resolveRequest.Tags = append(resolveRequest.Tags, tag)
+	}
+}
+
+func WithTagsForResolve(tags []*Tag) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		if resolveRequest.Tags == nil {
+			resolveRequest.Tags = make([]*Tag, 0)
+		}
+		resolveRequest.Tags = append(resolveRequest.Tags, tags...)
 	}
 }
