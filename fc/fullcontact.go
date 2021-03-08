@@ -144,12 +144,18 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PersonEnrich(personRequest *PersonRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
+
+	err := validatePersonRequest(personRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
 	if personRequest == nil {
 		go sendToChannel(ch, nil, "", NewFullContactError("Person Request can't be nil"))
 		return ch
 	}
-	reqBytes, err := json.Marshal(personRequest)
 
+	reqBytes, err := json.Marshal(personRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch

@@ -19,17 +19,12 @@ type PersonRequest struct {
 	Infer      bool        `json:"infer,omitempty"`
 }
 
-func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest, error) {
+func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest) {
 	pr := &PersonRequest{}
-
 	for _, opt := range option {
 		opt(pr)
 	}
-	err := validatePersonRequest(pr)
-	if err != nil {
-		pr = nil
-	}
-	return pr, err
+	return pr
 }
 
 func validatePersonRequest(pr *PersonRequest) error {
