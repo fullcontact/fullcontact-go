@@ -38,20 +38,31 @@ func TestMarshallNewResolveRequest(t *testing.T) {
 }
 
 func TestNewResolveRequestWithoutNameAndLocation(t *testing.T) {
-	_, err := NewResolveRequest(WithEmailForResolve("marianrd97@outlook.com"))
+	resolveRequest, _ := NewResolveRequest(WithEmailForResolve("marianrd97@outlook.com"))
+	err := validateResolveRequest(resolveRequest)
 	assert.NoError(t, err)
 }
 
-func TestNewResolveRequestWithNameOnly(t *testing.T) {
-	_, err := NewResolveRequest(WithEmailForResolve("marianrd97@outlook.com"),
+func TestNewResolveRequestWithNameOnlyWithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(WithEmailForResolve("marianrd97@outlook.com"),
 		WithNameForResolve(&PersonName{
 			Full: "Marian C Reed",
 		}))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithNameOnlyWithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithNameForResolve(&PersonName{
+			Full: "Marian C Reed",
+		}))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
-func TestNewResolveRequestWithLocationOnly(t *testing.T) {
-	_, err := NewResolveRequest(
+func TestNewResolveRequestWithLocationOnlyWithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
@@ -60,11 +71,25 @@ func TestNewResolveRequestWithLocationOnly(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithLocationForResolve(NewLocation(
+			WithAddressLine1("123/23"),
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
-func TestNewResolveRequestWithLocationWithoutAddressLine1(t *testing.T) {
-	_, err := NewResolveRequest(
+func TestNewResolveRequestWithLocationWithoutAddressLine1WithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
 		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
@@ -73,74 +98,124 @@ func TestNewResolveRequestWithLocationWithoutAddressLine1(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithLocationWithoutAddressLine1WithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
+		WithLocationForResolve(NewLocation(
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewResolveRequestWithLocationOnlyAddressLine1(t *testing.T) {
-	_, err := NewResolveRequest(
+func TestNewResolveRequestWithLocationOnlyAddressLine1WithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
 		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"))))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithLocationOnlyAddressLine1WithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
+		WithLocationForResolve(NewLocation(
+			WithAddressLine1("123/23"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewResolveRequestWithLocationWithAddressLine1AndCity(t *testing.T) {
-	_, err := NewResolveRequest(
+func TestNewResolveRequestWithLocationWithAddressLine1AndCityWithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
 		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithLocationWithAddressLine1AndCityWithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
+		WithLocationForResolve(NewLocation(
+			WithAddressLine1("123/23"),
+			WithCity("Denver"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewResolveRequestWithLocationWithAddressLine1AndRegion(t *testing.T) {
-	_, err := NewResolveRequest(
+func TestNewResolveRequestWithLocationWithAddressLine1AndRegionWithQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
 		WithEmailForResolve("marianrd97@outlook.com"),
 		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
+	err := validateResolveRequest(resolveRequest)
+	assert.NoError(t, err)
+}
+
+func TestNewResolveRequestWithLocationWithAddressLine1AndRegionWithoutQueryable(t *testing.T) {
+	resolveRequest, _ := NewResolveRequest(
+		WithNameForResolve(NewPersonName(WithFull("Test Name"))),
+		WithLocationForResolve(NewLocation(
+			WithAddressLine1("123/23"),
+			WithRegionCode("123123"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewResolveRequestWithValidLocation1(t *testing.T) {
-	_, err := NewResolveRequest(
+	resolveRequest, _ := NewResolveRequest(
 		WithNameForResolve(&PersonName{Full: "Marian C Reed"}),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("12343"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.NoError(t, err)
 }
 
 func TestNewResolveRequestWithValidLocation2(t *testing.T) {
-	_, err := NewResolveRequest(
+	resolveRequest, _ := NewResolveRequest(
 		WithNameForResolve(&PersonName{Full: "Marian C Reed"}),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"),
 			WithRegionCode("123123"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.NoError(t, err)
 }
 
 func TestNewResolveRequestWithValidLocation3(t *testing.T) {
-	_, err := NewResolveRequest(
+	resolveRequest, _ := NewResolveRequest(
 		WithNameForResolve(&PersonName{Full: "Marian C Reed"}),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithAddressLine2("Some Street"),
 			WithCity("Denver"),
 			WithRegionForLocation("123123"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.NoError(t, err)
 }
 
 func TestNewResolveRequestWithValidName(t *testing.T) {
-	_, err := NewResolveRequest(
+	resolveRequest, _ := NewResolveRequest(
 		WithNameForResolve(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForResolve(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("23432"))))
+	err := validateResolveRequest(resolveRequest)
 	assert.NoError(t, err)
 }
 

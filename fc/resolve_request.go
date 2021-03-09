@@ -18,40 +18,49 @@ type ResolveRequest struct {
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
 	resolveRequest := &ResolveRequest{}
-
 	for _, opt := range option {
 		opt(resolveRequest)
 	}
-	err := validateResolveRequest(resolveRequest)
-	if err != nil {
-		resolveRequest = nil
-	}
-	return resolveRequest, err
+	return resolveRequest, nil
+}
+
+func (resolveRequest *ResolveRequest) isQueryable() bool {
+	return resolveRequest.Emails != nil ||
+		resolveRequest.Phones != nil ||
+		resolveRequest.Profiles != nil ||
+		resolveRequest.Maid != nil ||
+		isPopulated(resolveRequest.RecordId) ||
+		isPopulated(resolveRequest.PersonId) ||
+		isPopulated(resolveRequest.PartnerId) ||
+		isPopulated(resolveRequest.LiNonId)
 }
 
 func validateResolveRequest(resolveRequest *ResolveRequest) error {
-	if resolveRequest.Location == nil && resolveRequest.Name == nil {
-		return nil
-	} else if resolveRequest.Location != nil && resolveRequest.Name != nil {
-		// Validating Location fields
-		if isPopulated(resolveRequest.Location.AddressLine1) &&
-			((isPopulated(resolveRequest.Location.City) &&
-				(isPopulated(resolveRequest.Location.Region) || isPopulated(resolveRequest.Location.RegionCode))) ||
-				(isPopulated(resolveRequest.Location.PostalCode))) {
-			// Validating Name fields
-			if (isPopulated(resolveRequest.Name.Full)) ||
-				(isPopulated(resolveRequest.Name.Given) && isPopulated(resolveRequest.Name.Family)) {
-				return nil
+	if !resolveRequest.isQueryable() {
+		if resolveRequest.Location == nil && resolveRequest.Name == nil {
+			return nil
+		} else if resolveRequest.Location != nil && resolveRequest.Name != nil {
+			// Validating Location fields
+			if isPopulated(resolveRequest.Location.AddressLine1) &&
+				((isPopulated(resolveRequest.Location.City) &&
+					(isPopulated(resolveRequest.Location.Region) || isPopulated(resolveRequest.Location.RegionCode))) ||
+					(isPopulated(resolveRequest.Location.PostalCode))) {
+				// Validating Name fields
+				if (isPopulated(resolveRequest.Name.Full)) ||
+					(isPopulated(resolveRequest.Name.Given) && isPopulated(resolveRequest.Name.Family)) {
+					return nil
+				} else {
+					return NewFullContactError("Name data requires full name or given and family name")
+				}
 			} else {
-				return NewFullContactError("Name data requires full name or given and family name")
+				return NewFullContactError(
+					"Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 			}
-		} else {
-			return NewFullContactError(
-				"Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 		}
+		return NewFullContactError(
+			"If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 	}
-	return NewFullContactError(
-		"If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	return nil
 }
 
 func validateForIdentityMap(request *ResolveRequest) error {
