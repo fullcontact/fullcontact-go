@@ -19,12 +19,23 @@ type PersonRequest struct {
 	Infer      bool        `json:"infer,omitempty"`
 }
 
-func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest) {
+func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest, error) {
 	pr := &PersonRequest{}
 	for _, opt := range option {
 		opt(pr)
 	}
-	return pr
+	return pr, nil
+}
+
+func (pr *PersonRequest) isQueryable() bool {
+	return pr.Emails != nil ||
+		pr.Phones != nil ||
+		pr.Profiles != nil ||
+		pr.Maid != nil ||
+		isPopulated(pr.RecordId) ||
+		isPopulated(pr.PersonId) ||
+		isPopulated(pr.PartnerId) ||
+		isPopulated(pr.LiNonId)
 }
 
 func validatePersonRequest(pr *PersonRequest) error {
@@ -35,28 +46,31 @@ func validatePersonRequest(pr *PersonRequest) error {
 		pr.Confidence != "MAX" {
 		return NewFullContactError("Confidence value can only be 'LOW', 'MED', 'HIGH', 'MAX'")
 	}
-	if pr.Location == nil && pr.Name == nil {
-		return nil
-	} else if pr.Location != nil && pr.Name != nil {
-		// Validating Location fields
-		if isPopulated(pr.Location.AddressLine1) &&
-			((isPopulated(pr.Location.City) &&
-				(isPopulated(pr.Location.Region) || isPopulated(pr.Location.RegionCode))) ||
-				(isPopulated(pr.Location.PostalCode))) {
-			// Validating Name fields
-			if (isPopulated(pr.Name.Full)) ||
-				(isPopulated(pr.Name.Given) && isPopulated(pr.Name.Family)) {
-				return nil
+	if !pr.isQueryable() {
+		if pr.Location == nil && pr.Name == nil {
+			return nil
+		} else if pr.Location != nil && pr.Name != nil {
+			// Validating Location fields
+			if isPopulated(pr.Location.AddressLine1) &&
+				((isPopulated(pr.Location.City) &&
+					(isPopulated(pr.Location.Region) || isPopulated(pr.Location.RegionCode))) ||
+					(isPopulated(pr.Location.PostalCode))) {
+				// Validating Name fields
+				if (isPopulated(pr.Name.Full)) ||
+					(isPopulated(pr.Name.Given) && isPopulated(pr.Name.Family)) {
+					return nil
+				} else {
+					return NewFullContactError("Name data requires full name or given and family name")
+				}
 			} else {
-				return NewFullContactError("Name data requires full name or given and family name")
+				return NewFullContactError(
+					"Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 			}
-		} else {
-			return NewFullContactError(
-				"Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 		}
+		return NewFullContactError(
+			"If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 	}
-	return NewFullContactError(
-		"If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	return nil
 }
 
 func WithEmail(email string) PersonRequestOption {

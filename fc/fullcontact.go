@@ -145,13 +145,13 @@ Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PersonEnrich(personRequest *PersonRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 
+	if personRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Person Request can't be nil"))
+		return ch
+	}
 	err := validatePersonRequest(personRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	if personRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Person Request can't be nil"))
 		return ch
 	}
 
