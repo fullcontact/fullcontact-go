@@ -29,7 +29,6 @@ func (resolveRequest *ResolveRequest) isQueryable() bool {
 		resolveRequest.Phones != nil ||
 		resolveRequest.Profiles != nil ||
 		resolveRequest.Maid != nil ||
-		isPopulated(resolveRequest.RecordId) ||
 		isPopulated(resolveRequest.PersonId) ||
 		isPopulated(resolveRequest.PartnerId) ||
 		isPopulated(resolveRequest.LiNonId)
@@ -74,14 +73,11 @@ func validateForIdentityMap(request *ResolveRequest) error {
 			}
 		}
 	}
-	if (request.Name != nil && request.Location != nil) ||
-		request.Emails != nil ||
-		request.Phones != nil ||
-		request.Profiles != nil {
-		return nil
-	} else {
+	if !request.isQueryable(){
 		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
 	}
+	err := validateResolveRequest(request)
+	return err
 }
 
 func validateForIdentityResolve(request *ResolveRequest) error {

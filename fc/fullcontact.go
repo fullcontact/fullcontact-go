@@ -282,11 +282,6 @@ func (fcClient *fullContactClient) IdentityDelete(resolveRequest *ResolveRequest
 }
 
 func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveRequest *ResolveRequest, url string) chan *APIResponse {
-	err := validateResolveRequest(resolveRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
 	reqBytes, err := json.Marshal(resolveRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
