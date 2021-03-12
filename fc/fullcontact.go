@@ -144,12 +144,18 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PersonEnrich(personRequest *PersonRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
+
 	if personRequest == nil {
 		go sendToChannel(ch, nil, "", NewFullContactError("Person Request can't be nil"))
 		return ch
 	}
-	reqBytes, err := json.Marshal(personRequest)
+	err := validatePersonRequest(personRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
 
+	reqBytes, err := json.Marshal(personRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -277,7 +283,6 @@ func (fcClient *fullContactClient) IdentityDelete(resolveRequest *ResolveRequest
 
 func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveRequest *ResolveRequest, url string) chan *APIResponse {
 	reqBytes, err := json.Marshal(resolveRequest)
-
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch

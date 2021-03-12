@@ -43,20 +43,31 @@ func TestMarshallNewPersonRequest(t *testing.T) {
 }
 
 func TestNewPersonRequestWithoutNameAndLocation(t *testing.T) {
-	_, err := NewPersonRequest(WithEmail("marianrd97@outlook.com"))
+	pr, _ := NewPersonRequest(WithEmail("marianrd97@outlook.com"))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
-func TestNewPersonRequestWithNameOnly(t *testing.T) {
-	_, err := NewPersonRequest(WithEmail("marianrd97@outlook.com"),
+func TestNewPersonRequestWithNameOnlyWithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(WithEmail("marianrd97@outlook.com"),
 		WithName(&PersonName{
 			Full: "Marian C Reed",
 		}))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithNameOnlyWithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(&PersonName{
+			Full: "Marian C Reed",
+		}))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
-func TestNewPersonRequestWithLocationOnly(t *testing.T) {
-	_, err := NewPersonRequest(
+func TestNewPersonRequestWithLocationOnlyWithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
 		WithEmail("marianrd97@outlook.com"),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
@@ -65,11 +76,25 @@ func TestNewPersonRequestWithLocationOnly(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithLocation(NewLocation(
+			WithAddressLine1("123/23"),
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
-func TestNewPersonRequestWithLocationWithoutAddressLine1(t *testing.T) {
-	_, err := NewPersonRequest(
+func TestNewPersonRequestWithLocationWithoutAddressLine1WithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
 		WithEmail("marianrd97@outlook.com"),
 		WithName(NewPersonName(WithFull("Test Name"))),
 		WithLocation(NewLocation(
@@ -78,79 +103,130 @@ func TestNewPersonRequestWithLocationWithoutAddressLine1(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithLocationWithoutAddressLine1WithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(NewPersonName(WithFull("Test Name"))),
+		WithLocation(NewLocation(
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewPersonRequestWithLocationOnlyAddressLine1(t *testing.T) {
-	_, err := NewPersonRequest(
+func TestNewPersonRequestWithLocationOnlyAddressLine1WithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
 		WithEmail("marianrd97@outlook.com"),
 		WithName(NewPersonName(WithFull("Test Name"))),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"))))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithLocationOnlyAddressLine1WithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(NewPersonName(WithFull("Test Name"))),
+		WithLocation(NewLocation(
+			WithAddressLine1("123/23"))))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewPersonRequestWithLocationWithAddressLine1AndCity(t *testing.T) {
-	_, err := NewPersonRequest(
+func TestNewPersonRequestWithLocationWithAddressLine1AndCityWithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
 		WithEmail("marianrd97@outlook.com"),
 		WithName(NewPersonName(WithFull("Test Name"))),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithLocationWithAddressLine1AndCityWithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(NewPersonName(WithFull("Test Name"))),
+		WithLocation(NewLocation(
+			WithAddressLine1("123/23"),
+			WithCity("Denver"))))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
-func TestNewPersonRequestWithLocationWithAddressLine1AndRegion(t *testing.T) {
-	_, err := NewPersonRequest(
+func TestNewPersonRequestWithLocationWithAddressLine1AndRegionWithQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
 		WithEmail("marianrd97@outlook.com"),
 		WithName(NewPersonName(WithFull("Test Name"))),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithLocationWithAddressLine1AndRegionWithoutQueryable(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(NewPersonName(WithFull("Test Name"))),
+		WithLocation(NewLocation(
+			WithAddressLine1("123/23"),
+			WithRegionCode("123123"))))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewPersonRequestWithValidLocation1(t *testing.T) {
-	_, err := NewPersonRequest(
+	pr, _ := NewPersonRequest(
 		WithName(&PersonName{Full: "Marian C Reed"}),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("12343"))))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
 func TestNewPersonRequestWithValidLocation2(t *testing.T) {
-	_, err := NewPersonRequest(
+	pr, _ := NewPersonRequest(
 		WithName(&PersonName{Full: "Marian C Reed"}),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"),
 			WithRegionCode("123123"))))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
 func TestNewPersonRequestWithValidLocation3(t *testing.T) {
-	_, err := NewPersonRequest(
+	pr, _ := NewPersonRequest(
 		WithName(&PersonName{Full: "Marian C Reed"}),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithAddressLine2("Some Street"),
 			WithCity("Denver"),
 			WithRegionForLocation("123123"))))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
 func TestNewPersonRequestWithValidName(t *testing.T) {
-	_, err := NewPersonRequest(
+	pr, _ := NewPersonRequest(
 		WithName(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocation(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("23432"))))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
 func TestWithConfidence(t *testing.T) {
-	_, err := NewPersonRequest(WithConfidence("test"))
+	pr, _ := NewPersonRequest(WithConfidence("test"))
+	err := validatePersonRequest(pr)
 	assert.EqualError(t, err, "FullContactError: Confidence value can only be 'LOW', 'MED', 'HIGH', 'MAX'")
 }
 
