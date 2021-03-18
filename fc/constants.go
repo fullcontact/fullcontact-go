@@ -1,7 +1,7 @@
 package fullcontact
 
 const (
-	version                    = "1.1.1"
+	version                    = "1.2.0"
 	userAgent                  = "FullContact_Go_Client_V" + version
 	FcApiKey                   = "FC_API_KEY"
 	FCGoClientTestType         = "FCGoClientTestType"
@@ -20,4 +20,9 @@ const (
 	audienceCreateUrl          = baseUrl + "audience.create"
 	audienceDownloadUrl        = baseUrl + "audience.download"
 	emailVerificationUrl       = v2BaseUrl + "verification/email"
+	permissionCreateUrl        = baseUrl + "permission.create"
+	permissionDeleteUrl        = baseUrl + "permission.delete"
+	permissionFindUrl          = baseUrl + "permission.find"
+	permissionCurrentUrl       = baseUrl + "permission.current"
+	permissionVerifyUrl        = baseUrl + "permission.verify"
 )

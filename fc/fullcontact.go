@@ -394,6 +394,127 @@ func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResp
 	return ch
 }
 
+/* Permission
+FullContact Permission API - PermissionCreate, takes an PermissionRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) PermissionCreate(permissionRequest *PermissionRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if permissionRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		return ch
+	}
+	err := validateForPermissionCreate(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+
+	reqBytes, err := json.Marshal(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(permissionCreateUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact Permission API - PermissionDelete, takes an PermissionRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) PermissionDelete(permissionRequest *PermissionRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if permissionRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		return ch
+	}
+	err := validateForPermissionDelete(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+
+	reqBytes, err := json.Marshal(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(permissionDeleteUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact Permission API - PermissionFind, takes an PermissionRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) PermissionFind(permissionRequest *PermissionRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if permissionRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		return ch
+	}
+	err := validateForPermissionFind(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+
+	reqBytes, err := json.Marshal(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(permissionFindUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact Permission API - PermissionCurrent, takes an PermissionRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) PermissionCurrent(permissionRequest *PermissionRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if permissionRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		return ch
+	}
+	err := validateForPermissionCurrent(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+
+	reqBytes, err := json.Marshal(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(permissionCurrentUrl, reqBytes, ch)
+	return ch
+}
+
+/* FullContact Permission API - PermissionVerify, takes an PermissionRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) PermissionVerify(permissionRequest *PermissionRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if permissionRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		return ch
+	}
+	err := validateForPermissionVerify(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+
+	reqBytes, err := json.Marshal(permissionRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(permissionVerifyUrl, reqBytes, ch)
+	return ch
+}
+
 func setPersonResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
