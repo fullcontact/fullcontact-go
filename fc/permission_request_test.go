@@ -37,7 +37,7 @@ func TestMarshallNewPermissionRequest(t *testing.T) {
 
 func TestNewPermissionRequestWithoutNameAndLocation(t *testing.T) {
 	pr, _ := NewPermissionRequest(WithEmailForPermission("marianrd97@outlook.com"))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -47,7 +47,7 @@ func TestNewPermissionRequestWithNameOnlyWithQueryable(t *testing.T) {
 		WithNameForPermission(&PersonName{
 			Full: "Marian C Reed",
 		}))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -56,7 +56,7 @@ func TestNewPermissionRequestWithNameOnlyWithoutQueryable(t *testing.T) {
 		WithNameForPermission(&PersonName{
 			Full: "Marian C Reed",
 		}))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
@@ -70,7 +70,7 @@ func TestNewPermissionRequestWithLocationOnlyWithQueryable(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -83,7 +83,7 @@ func TestNewPermissionRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
 }
 
@@ -97,7 +97,7 @@ func TestNewPermissionRequestWithLocationWithoutAddressLine1WithQueryable(t *tes
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -110,7 +110,7 @@ func TestNewPermissionRequestWithLocationWithoutAddressLine1WithoutQueryable(t *
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -120,7 +120,7 @@ func TestNewPermissionRequestWithLocationOnlyAddressLine1WithQueryable(t *testin
 		WithNameForPermission(NewPersonName(WithFull("Test Name"))),
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -129,7 +129,7 @@ func TestNewPermissionRequestWithLocationOnlyAddressLine1WithoutQueryable(t *tes
 		WithNameForPermission(NewPersonName(WithFull("Test Name"))),
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -140,7 +140,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithQueryable(t 
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -150,7 +150,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithoutQueryable
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -161,7 +161,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithQueryable(
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -171,7 +171,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithoutQueryab
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -181,7 +181,7 @@ func TestNewPermissionRequestWithValidLocation1(t *testing.T) {
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("12343"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -192,7 +192,7 @@ func TestNewPermissionRequestWithValidLocation2(t *testing.T) {
 			WithAddressLine1("123/23"),
 			WithCity("Denver"),
 			WithRegionCode("123123"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -204,7 +204,7 @@ func TestNewPermissionRequestWithValidLocation3(t *testing.T) {
 			WithAddressLine2("Some Street"),
 			WithCity("Denver"),
 			WithRegionForLocation("123123"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
@@ -214,15 +214,47 @@ func TestNewPermissionRequestWithValidName(t *testing.T) {
 		WithLocationForPermission(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("23432"))))
-	err := validatePermissionRequest(pr)
+	err := validateForPermissionCreate(pr)
 	assert.NoError(t, err)
 }
 
 
-func TestNilPermissionRequest(t *testing.T) {
+func TestNilPermissionCreateRequest(t *testing.T) {
 	fcTestClient := fullContactClient{}
-	ch := fcTestClient.PermissionEnrich(nil)
+	ch := fcTestClient.PermissionCreate(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Person Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission create request can't be nil")
+}
+
+func TestNilPermissionDeleteRequest(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	ch := fcTestClient.PermissionDelete(nil)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Permission delete request can't be nil")
+}
+
+func TestNilPermissionFindRequest(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	ch := fcTestClient.PermissionFind(nil)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Permission find request can't be nil")
+}
+
+func TestNilPermissionCurrentRequest(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	ch := fcTestClient.PermissionCurrent(nil)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Permission current request can't be nil")
+}
+
+func TestNilPermissionVerifyRequest(t *testing.T) {
+	fcTestClient := fullContactClient{}
+	ch := fcTestClient.PermissionVerify(nil)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.EqualError(t, resp.Err, "FullContactError: Permission verify request can't be nil")
 }

@@ -433,7 +433,7 @@ func (fcClient *fullContactClient) PermissionDelete(permissionRequest *Permissio
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(permissionRequest.Query)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -457,7 +457,7 @@ func (fcClient *fullContactClient) PermissionFind(permissionRequest *PermissionR
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(permissionRequest.Query)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -481,7 +481,7 @@ func (fcClient *fullContactClient) PermissionCurrent(permissionRequest *Permissi
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(permissionRequest.Query)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
