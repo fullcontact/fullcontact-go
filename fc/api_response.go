@@ -6,19 +6,22 @@ import (
 )
 
 type APIResponse struct {
-	RawHttpResponse           *http.Response
-	PersonResponse            *PersonResp
-	CompanyResponse           *CompanyResponse
-	CompanySearchResponse     []*CompanySearchResponse
-	ResolveResponse           *ResolveResponse
-	ResolveResponseWithTags   *ResolveResponseWithTags
-	EmailVerificationResponse *EmailVerificationResponse
-	TagsResponse              *TagsResponse
-	AudienceResponse          *AudienceResponse
-	StatusCode                int
-	Status                    string
-	IsSuccessful              bool
-	Err                       error
+	RawHttpResponse          	 *http.Response
+	PersonResponse           	 *PersonResp
+	CompanyResponse          	 *CompanyResponse
+	CompanySearchResponse    	 []*CompanySearchResponse
+	ResolveResponse          	 *ResolveResponse
+	ResolveResponseWithTags  	 *ResolveResponseWithTags
+	EmailVerificationResponse	 *EmailVerificationResponse
+	TagsResponse             	 *TagsResponse
+	AudienceResponse         	 *AudienceResponse
+	PermissionFindResponse 	  	 []*PermissionFindResponse
+	PermissionCurrentResponse	 map[string]map[string]PermissionCurrentResponse
+	PermissionVerifyResponse	 *PermissionVerifyResponse
+	StatusCode                	 int
+	Status                   	 string
+	IsSuccessful             	 bool
+	Err                      	 error
 }
 
 func (resp *APIResponse) String() string {

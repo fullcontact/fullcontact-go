@@ -132,8 +132,12 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setTagsResponse(apiResponse)
 		case audienceCreateUrl, audienceDownloadUrl:
 			setAudienceResponse(apiResponse)
-		case emailVerificationUrl:
-			setEmailVerificationResponse(apiResponse)
+		case permissionFindUrl:
+			setPermissionFindResponse(apiResponse)
+		case permissionCurrentUrl:
+			setPermissionCurrentResponse(apiResponse)
+		case permissionVerifyUrl:
+			setPermissionVerifyResponse(apiResponse)
 		}
 	}
 	ch <- apiResponse
@@ -686,6 +690,69 @@ func setEmailVerificationResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
 	apiResponse.EmailVerificationResponse = &emailResponse
+}
+
+func setPermissionFindResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var permissionFindResponse []*PermissionFindResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &permissionFindResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.PermissionFindResponse = permissionFindResponse
+}
+
+func setPermissionVerifyResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var permissionVerifyResponse PermissionVerifyResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &permissionVerifyResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.PermissionVerifyResponse = &permissionVerifyResponse
+}
+
+func setPermissionCurrentResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var permissionCurrentResponse map[string]map[string]PermissionCurrentResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &permissionCurrentResponse)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.PermissionCurrentResponse = permissionCurrentResponse
 }
 
 func min(x, y int) int {

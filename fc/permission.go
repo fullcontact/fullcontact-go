@@ -30,5 +30,13 @@ type PermissionVerifyResponse struct {
 	Channel			string		`json:"channel"`
 	PurposeId		int			`json:"purposeId"`
 	PurposeName		string		`json:"purposeName"`
-	timestamp		int		`json:"timestamp"`
+	timestamp		int			`json:"timestamp"`
+}
+
+type PermissionCurrentResponse struct {
+	Ttl				string		`json:"ttl"`
+	Enabled			bool		`json:"enabled"`
+	Channel			string		`json:"channel"`
+	PurposeId		int			`json:"purposeId"`
+	timestamp		int			`json:"timestamp"`
 }
