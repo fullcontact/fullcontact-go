@@ -1,6 +1,5 @@
 package fullcontact
 
-
 type PermissionFindResponse struct {
 	PermissionType      string          	`json:"permissionType"`
 	PermissionId   		string          	`json:"permissionId"`
@@ -13,7 +12,7 @@ type PermissionFindResponse struct {
 	PolicyUrl     		string      		`json:"policyUrl"`
 	TermsService		string				`json:"termsService"`
 	Timestamp			string				`json:"timestamp"`
-	Created				string				`json:"created"`
+	Created				int					`json:"created"`
 }
 
 type ConsentPurpose struct {
@@ -25,7 +24,7 @@ type ConsentPurpose struct {
 }
 
 type PermissionVerifyResponse struct {
-	Ttl				string		`json:"ttl"`
+	Ttl				int			`json:"ttl"`
 	Enabled			bool		`json:"enabled"`
 	Channel			string		`json:"channel"`
 	PurposeId		int			`json:"purposeId"`
@@ -34,7 +33,7 @@ type PermissionVerifyResponse struct {
 }
 
 type PermissionCurrentResponse struct {
-	Ttl				string		`json:"ttl"`
+	Ttl				int			`json:"ttl"`
 	Enabled			bool		`json:"enabled"`
 	Channel			string		`json:"channel"`
 	PurposeId		int			`json:"purposeId"`
