@@ -79,23 +79,23 @@ func validatePermissionMultifieldRequest(permissionRequest *PermissionRequest) e
 func validateForPermissionCreateFields(request *PermissionRequest) error {
 	if request.ConsentPurposes == nil {
 		return NewFullContactError("At least 1 `consentPurpose` is Required for PermissionRequest")
-	} else if isPopulated(request.PolicyUrl) {
-		return NewFullContactError("policyUrl is required for PermissionRequest")
-	} else if isPopulated(request.TermsService) {
-		return NewFullContactError("termsService is required for PermissionRequest")
-	} else if isPopulated(request.CollectionMethod) {
-		return NewFullContactError("collectionMethod is required for PermissionRequest")
-	} else if isPopulated(request.CollectionLocation) {
-		return NewFullContactError("collectionLocation is required for PermissionRequest")
+	} else if !isPopulated(request.CollectionMethod) {
+		return NewFullContactError("Collection Method is required for PermissionRequest")
+	} else if !isPopulated(request.CollectionLocation) {
+		return NewFullContactError("Collection Location is required for PermissionRequest")
+	} else if !isPopulated(request.PolicyUrl) {
+		return NewFullContactError("Policy URL is required for PermissionRequest")
+	} else if !isPopulated(request.TermsService) {
+		return NewFullContactError("Terms of Service is required for PermissionRequest")
 	}
 	return nil
 }
 
 func validateForPermissionVerifyFields(request *PermissionRequest) error {
 	if request.PurposeId == 0 {
-		return NewFullContactError("purposeId is required for PermissionRequest")
-	} else if isPopulated(request.Channel) {
-		return NewFullContactError("channel is required for PermissionRequest")
+		return NewFullContactError("Purpose ID is required for PermissionRequest")
+	} else if !isPopulated(request.Channel) {
+		return NewFullContactError("Channel is required for PermissionRequest")
 	}
 	return nil
 }
@@ -125,7 +125,7 @@ func validateForPermissionCurrent(request *PermissionRequest) error {
 }
 
 func validateForPermissionVerify(request *PermissionRequest) error {
-	err := validateForPermissionCreateFields(request)
+	err := validateForPermissionVerifyFields(request)
 	if err != nil {
 		return err
 	}

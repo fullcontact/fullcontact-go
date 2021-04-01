@@ -294,6 +294,141 @@ func TestNewPermissionRequestWithValidName(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err = validateForPermissionCreate(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err = validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Collection Method is required for PermissionRequest")
+}
+
+func TestNewPermissionRequestForCreateWithoutCollectionLocation(t *testing.T) {
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err = validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Collection Location is required for PermissionRequest")
+}
+
+func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err = validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Policy URL is required for PermissionRequest")
+}
+
+func TestNewPermissionRequestForCreateWithoutTermsService(t *testing.T) {
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"))
+	err = validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Terms of Service is required for PermissionRequest")
+}
+
+func TestNewPermissionRequestForVerifyWithPurposeIdAndChannel(t *testing.T) {
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithPurposeIdForPermission(1),
+		WithChannelForPermission("email"))
+	err := validateForPermissionVerify(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPermissionRequestForVerifyWithoutPurposeId(t *testing.T) {
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithChannelForPermission("email"))
+	err := validateForPermissionVerify(pr)
+	assert.EqualError(t, err, "FullContactError: Purpose ID is required for PermissionRequest")
+}
+
+func TestNewPermissionRequestForVerifyWithoutChannel(t *testing.T) {
+	pr, _ := NewPermissionRequest(
+		WithNameForPermission(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))),
+		WithPurposeIdForPermission(1))
+	err := validateForPermissionVerify(pr)
+	assert.EqualError(t, err, "FullContactError: Channel is required for PermissionRequest")
+}
+
 func TestNilPermissionCreateRequest(t *testing.T) {
 	fcTestClient := fullContactClient{}
 	ch := fcTestClient.PermissionCreate(nil)
