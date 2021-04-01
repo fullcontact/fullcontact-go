@@ -6,13 +6,58 @@ import (
 	"testing"
 )
 
-func TestMarshallNewPermissionRequest(t *testing.T) {
+func TestNewPermissionRequestForCreate(t *testing.T) {
 	emails := []string{"test1@gmail.com", "test2@outlook.com"}
 	profile1, err := NewProfile(WithUrl("https://twitter.com/mcreedy"))
 	assert.NoError(t, err)
 	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
 	assert.NoError(t, err)
-	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"dataFilter\":[\"individual\",\"social\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}],\"webhookUrl\":\"http://www.fullcontact.com/hook\",\"recordId\":\"customer123\",\"personId\":\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\",\"confidence\":\"HIGH\"}"
+	consentPurposes, err := NewConsentPurposes(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	assert.NoError(t, err)
+	requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]},\"consentPurposes\":[{\"purposeId\":1,\"channel\":[\"web\"],\"ttl\":365,\"enabled\":true}],\"locale\":\"US\",\"ipAddress\":\"127.0.0.1\",\"language\":\"en\",\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"Can we get a snapshot of where someone is opting in/out here?\",\"tcf\":\"some.valid.tcfv2.string\",\"policyUrl\":\"http://foo.baz\",\"termsService\":\"http://foo.tos\"}"
+	pr, err := NewPermissionRequest(
+		WithNameForPermission(NewPersonName(WithFull("Marian C Reed"), WithFamily("Reed"), WithGiven("Marian"))),
+		WithEmailForPermission("marianrd97@outlook.com"),
+		WithEmailsForPermission(emails),
+		WithPhoneForPermission("123-4567890"),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))),
+		WithProfileForPermission(profile1),
+		WithProfileForPermission(profile2),
+		WithMaidsForPermission("abcd-123-abcd-1234-abcdlkjhasdfgh"),
+		WithMaidsForPermission("1234-snbk-lkldiemvmruixp-2kdp-vdm"),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithLocaleForPermission("US"),
+		WithIpAddressForPermission("127.0.0.1"),
+		WithLanguageForPermission("en"),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithTcfForPermission("some.valid.tcfv2.string"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	assert.NoError(t, err)
+	reqBytes, err := json.Marshal(pr)
+	assert.NoError(t, err)
+	assert.Equal(t, requestJson, string(reqBytes))
+}
+
+func TestNewPermissionRequestForFind(t *testing.T) {
+	emails := []string{"test1@gmail.com", "test2@outlook.com"}
+	profile1, err := NewProfile(WithUrl("https://twitter.com/mcreedy"))
+	assert.NoError(t, err)
+	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
+	assert.NoError(t, err)
+	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]}"
+	//requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]}}"
 	pr, err := NewPermissionRequest(
 		WithNameForPermission(NewPersonName(WithFull("Marian C Reed"), WithFamily("Reed"), WithGiven("Marian"))),
 		WithEmailForPermission("marianrd97@outlook.com"),
@@ -29,6 +74,37 @@ func TestMarshallNewPermissionRequest(t *testing.T) {
 		WithProfileForPermission(profile2),
 		WithMaidsForPermission("abcd-123-abcd-1234-abcdlkjhasdfgh"),
 		WithMaidsForPermission("1234-snbk-lkldiemvmruixp-2kdp-vdm"))
+	assert.NoError(t, err)
+	reqBytes, err := json.Marshal(pr.Query)
+	assert.NoError(t, err)
+	assert.Equal(t, requestJson, string(reqBytes))
+}
+
+func TestNewPermissionRequestForVerify(t *testing.T) {
+	emails := []string{"test1@gmail.com", "test2@outlook.com"}
+	profile1, err := NewProfile(WithUrl("https://twitter.com/mcreedy"))
+	assert.NoError(t, err)
+	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
+	assert.NoError(t, err)
+	requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]},\"purposeId\":8,\"channel\":\"web\"}"
+	pr, err := NewPermissionRequest(
+		WithNameForPermission(NewPersonName(WithFull("Marian C Reed"), WithFamily("Reed"), WithGiven("Marian"))),
+		WithEmailForPermission("marianrd97@outlook.com"),
+		WithEmailsForPermission(emails),
+		WithPhoneForPermission("123-4567890"),
+		WithLocationForPermission(NewLocation(
+			WithAddressLine1("123/23"),
+			WithAddressLine2("Some Street"),
+			WithCity("Denver"),
+			WithRegionForLocation("Denver"),
+			WithRegionCode("123123"),
+			WithPostalCode("23124"))),
+		WithProfileForPermission(profile1),
+		WithProfileForPermission(profile2),
+		WithMaidsForPermission("abcd-123-abcd-1234-abcdlkjhasdfgh"),
+		WithMaidsForPermission("1234-snbk-lkldiemvmruixp-2kdp-vdm"),
+		WithPurposeIdForPermission(8),
+		WithChannelForPermission("web"))
 	assert.NoError(t, err)
 	reqBytes, err := json.Marshal(pr)
 	assert.NoError(t, err)
@@ -223,7 +299,7 @@ func TestNilPermissionCreateRequest(t *testing.T) {
 	ch := fcTestClient.PermissionCreate(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission create request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
 }
 
 func TestNilPermissionDeleteRequest(t *testing.T) {
@@ -231,7 +307,7 @@ func TestNilPermissionDeleteRequest(t *testing.T) {
 	ch := fcTestClient.PermissionDelete(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission delete request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
 }
 
 func TestNilPermissionFindRequest(t *testing.T) {
@@ -239,7 +315,7 @@ func TestNilPermissionFindRequest(t *testing.T) {
 	ch := fcTestClient.PermissionFind(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission find request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
 }
 
 func TestNilPermissionCurrentRequest(t *testing.T) {
@@ -247,7 +323,7 @@ func TestNilPermissionCurrentRequest(t *testing.T) {
 	ch := fcTestClient.PermissionCurrent(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission current request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
 }
 
 func TestNilPermissionVerifyRequest(t *testing.T) {
@@ -255,5 +331,5 @@ func TestNilPermissionVerifyRequest(t *testing.T) {
 	ch := fcTestClient.PermissionVerify(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission verify request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
 }

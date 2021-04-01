@@ -17,7 +17,7 @@ type PermissionMultifield struct {
 type PermissionRequest struct {
 	Timestamp  			int							`json:"timestamp,omitempty"`
 	Query    			PermissionMultifield		`json:"query,omitempty"`
-	ConsentPurposes		[]*ConsentPurpose 			`json:"consentPurposes,omitempty"`
+	ConsentPurposes		[]*ConsentPurposes 			`json:"consentPurposes,omitempty"`
 	Locale     			string      				`json:"locale,omitempty"`
 	IpAddress			string						`json:"ipAddress,omitempty"`
 	Language     		string      				`json:"language,omitempty"`
@@ -26,7 +26,7 @@ type PermissionRequest struct {
 	Tcf					string						`json:"tcf,omitempty"`
 	PolicyUrl     		string      				`json:"policyUrl,omitempty"`
 	TermsService		string						`json:"termsService,omitempty"`
-	PurposeId			string						`json:"purposeId,omitempty"`
+	PurposeId			int							`json:"purposeId,omitempty"`
 	Channel				string						`json:"channel,omitempty"`
 }
 
@@ -92,7 +92,7 @@ func validateForPermissionCreateFields(request *PermissionRequest) error {
 }
 
 func validateForPermissionVerifyFields(request *PermissionRequest) error {
-	if isPopulated(request.PurposeId) {
+	if request.PurposeId == 0 {
 		return NewFullContactError("purposeId is required for PermissionRequest")
 	} else if isPopulated(request.Channel) {
 		return NewFullContactError("channel is required for PermissionRequest")
@@ -101,50 +101,35 @@ func validateForPermissionVerifyFields(request *PermissionRequest) error {
 }
 
 func validateForPermissionCreate(request *PermissionRequest) error {
-	if !request.isQueryable(){
-		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
-	}
-	err := validatePermissionMultifieldRequest(request)
+	err := validateForPermissionCreateFields(request)
 	if err != nil {
 		return err
 	}
-	err = validateForPermissionCreateFields(request)
+	err = validatePermissionMultifieldRequest(request)
 	return err
 }
 
 func validateForPermissionDelete(request *PermissionRequest) error {
-	if !request.isQueryable(){
-		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
-	}
 	err := validatePermissionMultifieldRequest(request)
 	return err
 }
 
 func validateForPermissionFind(request *PermissionRequest) error {
-	if !request.isQueryable(){
-		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
-	}
 	err := validatePermissionMultifieldRequest(request)
 	return err
 }
 
 func validateForPermissionCurrent(request *PermissionRequest) error {
-	if !request.isQueryable(){
-		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
-	}
 	err := validatePermissionMultifieldRequest(request)
 	return err
 }
 
 func validateForPermissionVerify(request *PermissionRequest) error {
-	if !request.isQueryable(){
-		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
-	}
-	err := validatePermissionMultifieldRequest(request)
+	err := validateForPermissionCreateFields(request)
 	if err != nil {
 		return err
 	}
-	err = validateForPermissionCreateFields(request)
+	err = validatePermissionMultifieldRequest(request)
 	return err
 }
 
@@ -229,19 +214,19 @@ func WithLiNonIdForPermission(liNonId string) PermissionRequestOption {
 	}
 }
 
-func WithConsentPurposeForPermission(consentPurpose *ConsentPurpose) PermissionRequestOption {
+func WithConsentPurposeForPermission(consentPurpose *ConsentPurposes) PermissionRequestOption {
 	return func(pr *PermissionRequest) {
 		if pr.ConsentPurposes == nil {
-			pr.ConsentPurposes = make([]*ConsentPurpose, 0)
+			pr.ConsentPurposes = make([]*ConsentPurposes, 0)
 		}
 		pr.ConsentPurposes = append(pr.ConsentPurposes, consentPurpose)
 	}
 }
 
-func WithConsentPurposesForPermission(consentPurpose []*ConsentPurpose) PermissionRequestOption {
+func WithConsentPurposesForPermission(consentPurpose []*ConsentPurposes) PermissionRequestOption {
 	return func(pr *PermissionRequest) {
 		if pr.ConsentPurposes == nil {
-			pr.ConsentPurposes = make([]*ConsentPurpose, 0)
+			pr.ConsentPurposes = make([]*ConsentPurposes, 0)
 		}
 		pr.ConsentPurposes = append(pr.ConsentPurposes, consentPurpose...)
 	}
@@ -295,7 +280,7 @@ func WithTermsServiceForPermission(termsService string) PermissionRequestOption 
 	}
 }
 
-func WithPurposeIdForPermission(purposeId string) PermissionRequestOption {
+func WithPurposeIdForPermission(purposeId int) PermissionRequestOption {
 	return func(pr *PermissionRequest) {
 		pr.PurposeId = purposeId
 	}

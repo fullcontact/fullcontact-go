@@ -17,8 +17,8 @@ type PermissionFindResponse struct {
 }
 
 type ConsentPurpose struct {
-	PurposeId		string		`json:"purposeId"`
-	Channel			[]string	`json:"channel"`
+	PurposeId		int			`json:"purposeId"`
+	Channel			string		`json:"channel"`
 	Ttl				int			`json:"ttl"`
 	Enabled			bool		`json:"enabled"`
 	AsOfTimestamp 	int			`json:"asOfTimestamp"`
