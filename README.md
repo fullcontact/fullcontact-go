@@ -172,6 +172,7 @@ such as:
 - `PersonId`: _string_
 - `LiNonId`: _string_
 - `PartnerId`: _string_
+- `Placekey`: _string_
 
 
 ```go
@@ -307,6 +308,7 @@ such as:
 - `PersonId`: _string_
 - `LiNonId`: _string_
 - `PartnerId`: _string_
+- `Placekey`: _string_
 
 ```go
 resolveRequest, err := fc.NewResolveRequest(
@@ -497,6 +499,7 @@ All Permission Api requires `MultifieldRequest` requests, which can be construct
 - `PersonId`: _string_
 - `LiNonId`: _string_
 - `PartnerId`: _string_
+- `Placekey`: _string_
 
 ```go
 multifieldRequest, err := fc.NewMultifieldRequest(

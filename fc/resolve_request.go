@@ -222,3 +222,9 @@ func WithTagsForResolve(tags []*Tag) ResolveRequestOption {
 		resolveRequest.Tags = append(resolveRequest.Tags, tags...)
 	}
 }
+
+func WithPlacekeyForResolve(placekey string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.Placekey = placekey
+	}
+}
