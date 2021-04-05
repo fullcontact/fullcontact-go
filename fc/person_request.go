@@ -17,6 +17,7 @@ type PersonRequest struct {
 	LiNonId    string      `json:"li_nonid,omitempty"`
 	Confidence string      `json:"confidence,omitempty"`
 	Infer      bool        `json:"infer,omitempty"`
+	Placekey   string      `json:"placekey,omitempty"`
 }
 
 func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest, error) {
@@ -47,7 +48,7 @@ func validatePersonRequest(pr *PersonRequest) error {
 		return NewFullContactError("Confidence value can only be 'LOW', 'MED', 'HIGH', 'MAX'")
 	}
 	if !pr.isQueryable() {
-		if pr.Location == nil && pr.Name == nil {
+		if (pr.Location == nil && pr.Name == nil && !isPopulated(pr.Placekey)) || (isPopulated(pr.Placekey) && pr.Name != nil ){
 			return nil
 		} else if pr.Location != nil && pr.Name != nil {
 			// Validating Location fields
@@ -214,5 +215,11 @@ func WithConfidence(confidence string) PersonRequestOption {
 func WithInfer(infer bool) PersonRequestOption {
 	return func(pr *PersonRequest) {
 		pr.Infer = infer
+	}
+}
+
+func WithPlacekey(placekey string) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.Placekey = placekey
 	}
 }

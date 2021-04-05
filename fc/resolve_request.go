@@ -14,6 +14,7 @@ type ResolveRequest struct {
 	PartnerId string      `json:"partnerId,omitempty"`
 	LiNonId   string      `json:"li_nonid,omitempty"`
 	Tags      []*Tag      `json:"tags,omitempty"`
+	Placekey  string      `json:"placekey,omitempty"`
 }
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
@@ -36,7 +37,9 @@ func (resolveRequest *ResolveRequest) isQueryable() bool {
 
 func validateResolveRequest(resolveRequest *ResolveRequest) error {
 	if !resolveRequest.isQueryable() {
-		if resolveRequest.Location == nil && resolveRequest.Name == nil {
+		if resolveRequest.Location == nil && resolveRequest.Name == nil && !isPopulated(resolveRequest.Placekey){
+			return nil
+		} else if isPopulated(resolveRequest.Placekey) && resolveRequest.Name != nil {
 			return nil
 		} else if resolveRequest.Location != nil && resolveRequest.Name != nil {
 			// Validating Location fields
