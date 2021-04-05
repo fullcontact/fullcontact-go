@@ -195,6 +195,9 @@ func main() {
 	//Permission
 	//Permission Create
 
+	multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+
 	consentPurposes, err := fc.NewConsentPurposes(
 		fc.WithConsentPurposeId(1),
 		fc.WithConsentPurposeChannel("web"),
@@ -202,7 +205,7 @@ func main() {
 		fc.WithConsentPurposeEnabled(true))
 
 	permissionCreateRequest, err := fc.NewPermissionRequest(
-		fc.WithEmailForPermission("bart@fullcontact.com"),
+		fc.WithMultifieldRequestForPermission(multifieldRequest),
 		fc.WithConsentPurposeForPermission(consentPurposes),
 		fc.WithCollectionMethodForPermission("cookiePopUp"),
 		fc.WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
@@ -213,60 +216,46 @@ func main() {
 		return
 	}
 
-	//Sending Permission create request
-	permissionCreateCh := fcClient.PermissionCreate(permissionCreateRequest)
-	permissionCreateResp := <-permissionCreateCh
-	fmt.Printf("Permission Create API Response: %v", permissionCreateResp)
-	if permissionCreateResp.IsSuccessful == true {
-		fmt.Printf("Permission Create Response: %v", permissionCreateResp)
+	//Sending Permission Create request
+	resp = <- fcClient.PermissionCreate(permissionCreateRequest)
+	fmt.Printf("Permission Create API Response: %v", resp)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Permission Create Response: %v", resp)
 	}
 
 	//Permission Find
-	permissionFindRequest, err := fc.NewPermissionRequest(
-		fc.WithEmailForPermission("bart@fullcontact.com"))
-
 	//Sending Permission Find request which returns a channel of type `APIResponse`
-	permissionFindCh := fcClient.PermissionFind(permissionFindRequest)
-	permissionFindResp := <-permissionFindCh
-	fmt.Printf("Permission Find API Response: %v", permissionFindResp)
-	if permissionFindResp.IsSuccessful == true {
-		fmt.Printf("Permission Find Response: %v", permissionFindResp.PermissionFindResponse)
+	resp = <- fcClient.PermissionFind(multifieldRequest)
+	fmt.Printf("Permission Find API Response: %v", resp)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Permission Find Response: %v", resp.PermissionFindResponse)
 	}
 
 	//Permission Current
-	permissionCurrentRequest, err := fc.NewPermissionRequest(
-		fc.WithEmailForPermission("bart@fullcontact.com"))
-
-	//Sending Permission Find request which returns a channel of type `APIResponse`
-	permissionCurrentCh := fcClient.PermissionCurrent(permissionCurrentRequest)
-	permissionCurrentResp := <-permissionCurrentCh
-	fmt.Printf("Permission Current API Response: %v", permissionCurrentResp)
-	if permissionCurrentResp.IsSuccessful == true {
-		fmt.Printf("Permission Current Response: %v", permissionCurrentResp.PermissionCurrentResponse)
+	//Sending Permission Current request which returns a channel of type `APIResponse`
+	resp = <- fcClient.PermissionCurrent(multifieldRequest)
+	fmt.Printf("Permission Current API Response: %v", resp)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Permission Current Response: %v", resp.PermissionCurrentResponse)
 	}
 
 	//Permission Verify
 	permissionVerifyRequest, err := fc.NewPermissionRequest(
-		fc.WithEmailForPermission("bart@fullcontact.com"),
+		fc.WithMultifieldRequestForPermission(multifieldRequest),
 		fc.WithPurposeIdForPermission(1),
 		fc.WithChannelForPermission("web"))
 
-	//Sending Permission Find request which returns a channel of type `APIResponse`
-	permissionVerifyCh := fcClient.PermissionVerify(permissionVerifyRequest)
-	permissionVerifyResp := <-permissionVerifyCh
-	fmt.Printf("Permission Verify API Response: %v", permissionVerifyResp)
-	if permissionVerifyResp.IsSuccessful == true {
-		fmt.Printf("Permission Verify Response: %v", permissionVerifyResp.PermissionVerifyResponse)
+	//Sending Permission Verify request which returns a channel of type `APIResponse`
+	resp = <- fcClient.PermissionVerify(permissionVerifyRequest)
+	fmt.Printf("Permission Verify API Response: %v", resp)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Permission Verify Response: %v", resp.PermissionVerifyResponse)
 	}
 
 	//Permission Delete
-	permissionDeleteRequest, err := fc.NewPermissionRequest(
-		fc.WithEmailForPermission("bart@fullcontact.com"))
-
-	//Sending Permission Find request which returns a channel of type `APIResponse`
-	permissionDeleteCh := fcClient.PermissionDelete(permissionDeleteRequest)
-	permissionDeleteResp := <-permissionDeleteCh
-	if permissionDeleteResp.IsSuccessful == true {
-		fmt.Printf("Permission Delete API Response: %v", permissionDeleteResp)
+	//Sending Permission Delete request
+	resp = <- fcClient.PermissionDelete(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Permission Delete API Response: %v", resp)
 	}
 }
