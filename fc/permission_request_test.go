@@ -140,7 +140,7 @@ func TestNewPermissionRequestWithNameOnlyWithoutQueryable(t *testing.T) {
 			Full: "Marian C Reed",
 		}))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewPermissionRequestWithLocationOnlyWithQueryable(t *testing.T) {
@@ -167,7 +167,7 @@ func TestNewPermissionRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewPermissionRequestWithLocationWithoutAddressLine1WithQueryable(t *testing.T) {

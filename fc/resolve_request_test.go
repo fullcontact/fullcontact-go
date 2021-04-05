@@ -58,7 +58,7 @@ func TestNewResolveRequestWithNameOnlyWithoutQueryable(t *testing.T) {
 			Full: "Marian C Reed",
 		}))
 	err := validateResolveRequest(resolveRequest)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewResolveRequestWithLocationOnlyWithQueryable(t *testing.T) {
@@ -85,7 +85,7 @@ func TestNewResolveRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
 	err := validateResolveRequest(resolveRequest)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewResolveRequestWithLocationWithoutAddressLine1WithQueryable(t *testing.T) {
