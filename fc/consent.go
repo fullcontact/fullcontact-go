@@ -3,7 +3,7 @@ package fullcontact
 type ConsentPurposesOption func(consentPurposes *ConsentPurposes)
 
 type ConsentPurposes struct {
-	PurposeId		int		`json:"purposeId"`
+	PurposeId		int			`json:"purposeId"`
 	Channel			[]string	`json:"channel"`
 	Ttl				int			`json:"ttl"`
 	Enabled			bool		`json:"enabled"`
@@ -29,8 +29,6 @@ func validateConsentPurpose(consentPurpose *ConsentPurposes) error {
 		return NewFullContactError("Channel is required for consentPurpose")
 	} else if &consentPurpose.Enabled == nil {
 		return NewFullContactError("Enabled is required for consentPurpose")
-	} else if consentPurpose.Ttl == 0 {
-		return NewFullContactError("Ttl is required for consentPurpose")
 	}
 	return nil
 }

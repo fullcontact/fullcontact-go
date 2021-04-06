@@ -1,17 +1,17 @@
 package fullcontact
 
 type PermissionFindResponse struct {
-	PermissionType      string          	`json:"permissionType"`
-	PermissionId   		string          	`json:"permissionId"`
-	ConsentPurposes    	[]*ConsentPurpose   `json:"consentPurposes"`
-	Locale     			string      		`json:"locale"`
+	PermissionType      string				`json:"permissionType"`
+	PermissionId   		string				`json:"permissionId"`
+	ConsentPurposes    	[]*ConsentPurpose	`json:"consentPurposes"`
+	Locale     			string				`json:"locale"`
 	IpAddress			string				`json:"ipAddress"`
-	Language     		string      		`json:"language"`
+	Language     		string				`json:"language"`
 	CollectionMethod	string				`json:"collectionMethod"`
-	CollectionLocation 	string      		`json:"collectionLocation"`
-	PolicyUrl     		string      		`json:"policyUrl"`
+	CollectionLocation 	string				`json:"collectionLocation"`
+	PolicyUrl     		string				`json:"policyUrl"`
 	TermsService		string				`json:"termsService"`
-	Timestamp			string				`json:"timestamp"`
+	Timestamp			int					`json:"timestamp"`
 	Created				int					`json:"created"`
 }
 

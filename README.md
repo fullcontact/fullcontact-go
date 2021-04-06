@@ -494,7 +494,6 @@ All Permission Api requires `MultifieldRequest` requests, which can be construct
     - `Userid`: _string_
     - `Url`: _string_
 - `Maids`: _[]string_
-- `Tags`: _[]*Tag_
 - `RecordId`: _string_
 - `PersonId`: _string_
 - `LiNonId`: _string_
@@ -524,7 +523,7 @@ The following are the corresponding response classes
 
 #### Parameters:
 Supported fields in query:
-- `query`: MultifieldReq - [required]
+- `query`: MultifieldRequest - [required]
 - `consentPurposes`: List[ConsentPurposes] - [required]
 - `locale`: string
 - `ipAddress`: string
@@ -533,7 +532,7 @@ Supported fields in query:
 - `collectionLocation`: string - [required]
 - `policyUrl`: string - [required]
 - `termsService`: string - [required]
--`tcf`: string
+- `tcf`: string
 - `timestamp`: int
 
 #### Returns:
@@ -542,7 +541,7 @@ class: `PermissionCreateResponse`. A basic API response with response code as 20
 ### Permission Verify
 #### Parameters:
 Supported fields in query:
-- `query`: MultifieldReq - [required]
+- `query`: MultifieldRequest - [required]
 - `purposeId`: int - [required]
 - `channel`: string - [required]
 

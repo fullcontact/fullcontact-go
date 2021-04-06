@@ -208,9 +208,9 @@ func main() {
 		fc.WithMultifieldRequestForPermission(multifieldRequest),
 		fc.WithConsentPurposeForPermission(consentPurposes),
 		fc.WithCollectionMethodForPermission("cookiePopUp"),
-		fc.WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
-		fc.WithPolicyUrlForPermission("https://www.fullcontact.com/privacy/privacy-policy"),
-		fc.WithTermsServiceForPermission("https://www.fullcontact.com/privacy/terms-of-use"))
+		fc.WithCollectionLocationForPermission("https://kenblahblah.com"),
+		fc.WithPolicyUrlForPermission("http://foo.baz"),
+		fc.WithTermsServiceForPermission("http://foo.tos"))
 	if err != nil {
 		log.Fatalln(err)
 		return

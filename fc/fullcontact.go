@@ -132,6 +132,10 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setTagsResponse(apiResponse)
 		case audienceCreateUrl, audienceDownloadUrl:
 			setAudienceResponse(apiResponse)
+		case permissionCreateUrl:
+			setPermissionCreateResponse(apiResponse)
+		case permissionDeleteUrl:
+			setPermissionDeleteResponse(apiResponse)
 		case permissionFindUrl:
 			setPermissionFindResponse(apiResponse)
 		case permissionCurrentUrl:
@@ -425,19 +429,19 @@ func (fcClient *fullContactClient) PermissionCreate(permissionRequest *Permissio
 
 /* FullContact Permission API - PermissionDelete, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
-func (fcClient *fullContactClient) PermissionDelete(permissionRequest *MultifieldRequest) chan *APIResponse {
+func (fcClient *fullContactClient) PermissionDelete(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
-	if permissionRequest == nil {
+	if multifieldRequest == nil {
 		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
 		return ch
 	}
-	err := validateForPermissionDelete(permissionRequest)
+	err := validateForPermissionDelete(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -449,19 +453,19 @@ func (fcClient *fullContactClient) PermissionDelete(permissionRequest *Multifiel
 
 /* FullContact Permission API - PermissionFind, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
-func (fcClient *fullContactClient) PermissionFind(permissionRequest *MultifieldRequest) chan *APIResponse {
+func (fcClient *fullContactClient) PermissionFind(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
-	if permissionRequest == nil {
+	if multifieldRequest == nil {
 		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
 		return ch
 	}
-	err := validateForPermissionFind(permissionRequest)
+	err := validateForPermissionFind(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -473,19 +477,19 @@ func (fcClient *fullContactClient) PermissionFind(permissionRequest *MultifieldR
 
 /* FullContact Permission API - PermissionCurrent, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
-func (fcClient *fullContactClient) PermissionCurrent(permissionRequest *MultifieldRequest) chan *APIResponse {
+func (fcClient *fullContactClient) PermissionCurrent(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
-	if permissionRequest == nil {
+	if multifieldRequest == nil {
 		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
 		return ch
 	}
-	err := validateForPermissionCurrent(permissionRequest)
+	err := validateForPermissionCurrent(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
 	}
 
-	reqBytes, err := json.Marshal(permissionRequest)
+	reqBytes, err := json.Marshal(multifieldRequest)
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
@@ -690,6 +694,30 @@ func setEmailVerificationResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
 	apiResponse.EmailVerificationResponse = &emailResponse
+}
+
+func setPermissionCreateResponse(apiResponse *APIResponse) {
+	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+}
+
+func setPermissionDeleteResponse(apiResponse *APIResponse) {
+	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
 }
 
 func setPermissionFindResponse(apiResponse *APIResponse) {
