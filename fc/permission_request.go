@@ -184,7 +184,7 @@ type ConsentPurpose struct {
 	PurposeId		int			`json:"purposeId"`
 	Channel			[]string	`json:"channel"`
 	Ttl				int			`json:"ttl"`
-	Enabled			bool		`json:"enabled"`
+	Enabled			*bool		`json:"enabled"`
 }
 
 func NewConsentPurpose(options ...ConsentPurposeOption) *ConsentPurpose {
@@ -200,7 +200,7 @@ func validateConsentPurpose(consentPurpose *ConsentPurpose) error {
 		return NewFullContactError("Purpose id is required for consentPurpose")
 	} else if consentPurpose.Channel == nil {
 		return NewFullContactError("Channel is required for consentPurpose")
-	} else if &consentPurpose.Enabled == nil {
+	} else if consentPurpose.Enabled == nil {
 		return NewFullContactError("Enabled is required for consentPurpose")
 	}
 	return nil
@@ -238,7 +238,7 @@ func WithConsentPurposeTtl(ttl int) ConsentPurposeOption {
 
 func WithConsentPurposeEnabled(enabled bool) ConsentPurposeOption {
 	return func(consentPurpose *ConsentPurpose) {
-		consentPurpose.Enabled = enabled
+		consentPurpose.Enabled = &enabled
 	}
 }
 

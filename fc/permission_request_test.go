@@ -17,7 +17,6 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, err := NewMultifieldRequest(
 		WithNameForMultifieldRequest(NewPersonName(WithFull("Marian C Reed"), WithFamily("Reed"), WithGiven("Marian"))),
 		WithEmailForMultifieldRequest("marianrd97@outlook.com"),
@@ -376,7 +375,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeEnabled(t *testing.T)
 	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeTtl(365),
-		WithConsentPurposeEnabled(true))
+		WithConsentPurposeChannel("web"))
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -390,7 +389,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeEnabled(t *testing.T)
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
-	assert.EqualError(t, err, "FullContactError: Channel is required for consentPurpose")
+	assert.EqualError(t, err, "FullContactError: Enabled is required for consentPurpose")
 }
 
 func TestNewPermissionRequestForCreateWithoutConsentPurposeTtl(t *testing.T) {
