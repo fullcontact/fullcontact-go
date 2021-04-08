@@ -198,7 +198,7 @@ func main() {
 	multifieldRequest, err := fc.NewMultifieldRequest(
 		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
 
-	consentPurpose, err := fc.NewConsentPurpose(
+	consentPurpose := fc.NewConsentPurpose(
 		fc.WithConsentPurposeId(1),
 		fc.WithConsentPurposeChannel("web"),
 		fc.WithConsentPurposeTtl(365),

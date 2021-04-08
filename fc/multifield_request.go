@@ -34,28 +34,31 @@ func (multifieldRequest *MultifieldRequest) isQueryable() bool {
 		isPopulated(multifieldRequest.LiNonId)
 }
 
+func (multifieldRequest *MultifieldRequest) isValidName() bool {
+	return (isPopulated(multifieldRequest.Name.Full)) ||
+		(isPopulated(multifieldRequest.Name.Given) && isPopulated(multifieldRequest.Name.Family))
+}
+
+func (multifieldRequest *MultifieldRequest) isValidLocation() bool {
+	return isPopulated(multifieldRequest.Location.AddressLine1) &&
+		((isPopulated(multifieldRequest.Location.City) &&
+			(isPopulated(multifieldRequest.Location.Region) || isPopulated(multifieldRequest.Location.RegionCode))) ||
+			(isPopulated(multifieldRequest.Location.PostalCode)))
+}
+
 func (multifieldRequest *MultifieldRequest) validate() error {
 	if !multifieldRequest.isQueryable() {
-		if multifieldRequest.Location == nil && multifieldRequest.Name == nil && !isPopulated(multifieldRequest.Placekey) {
+		if multifieldRequest.Location == nil && multifieldRequest.Name == nil {
 			return nil
-		} else if isPopulated(multifieldRequest.Placekey) && multifieldRequest.Name != nil {
-			return nil
-		} else if multifieldRequest.Location != nil && multifieldRequest.Name != nil {
-			// Validating Location fields
-			if isPopulated(multifieldRequest.Location.AddressLine1) &&
-				((isPopulated(multifieldRequest.Location.City) &&
-					(isPopulated(multifieldRequest.Location.Region) || isPopulated(multifieldRequest.Location.RegionCode))) ||
-					(isPopulated(multifieldRequest.Location.PostalCode))) {
-				// Validating Name fields
-				if (isPopulated(multifieldRequest.Name.Full)) ||
-					(isPopulated(multifieldRequest.Name.Given) && isPopulated(multifieldRequest.Name.Family)) {
+		} else if (multifieldRequest.Location != nil || isPopulated(multifieldRequest.Placekey)) && multifieldRequest.Name != nil {
+			if (multifieldRequest.Location != nil && multifieldRequest.isValidLocation()) || isPopulated(multifieldRequest.Placekey) {
+				if multifieldRequest.isValidName() {
 					return nil
 				} else {
 					return NewFullContactError("Name data requires full name or given and family name")
 				}
 			} else {
-				return NewFullContactError(
-					"Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+				return NewFullContactError("A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 			}
 		}
 		return NewFullContactError(

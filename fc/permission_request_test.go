@@ -12,7 +12,7 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 	assert.NoError(t, err)
 	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
 	assert.NoError(t, err)
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -194,7 +194,7 @@ func TestNewPermissionRequestWithLocationWithoutAddressLine1WithoutQueryable(t *
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewPermissionRequestWithLocationOnlyAddressLine1WithQueryable(t *testing.T) {
@@ -213,7 +213,7 @@ func TestNewPermissionRequestWithLocationOnlyAddressLine1WithoutQueryable(t *tes
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"))))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithQueryable(t *testing.T) {
@@ -234,7 +234,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithoutQueryable
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithQueryable(t *testing.T) {
@@ -255,7 +255,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithoutQueryab
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
 	err := validateForPermissionFind(multifieldRequest)
-	assert.EqualError(t, err, "FullContactError: Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
+	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
 func TestNewPermissionRequestWithValidLocation1(t *testing.T) {
@@ -301,13 +301,20 @@ func TestNewPermissionRequestWithValidName(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestNewPermissionRequestWithValidNameWithValidPlacekey(t *testing.T) {
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithPlacekeyForMultifieldRequest("226@5z4-zvy-ffz"))
+	err := validateForPermissionFind(multifieldRequest)
+	assert.NoError(t, err)
+}
+
 func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -320,17 +327,98 @@ func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
 		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
-	err = validateForPermissionCreate(pr)
+	err := validateForPermissionCreate(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPermissionRequestForCreateWithoutConsentPurposeId(t *testing.T) {
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	pr, _ := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(NewConsentPurpose(
+			WithConsentPurposeChannel("web"),
+			WithConsentPurposeTtl(365),
+			WithConsentPurposeEnabled(true))),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err := validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Purpose id is required for consentPurpose")
+}
+
+func TestNewPermissionRequestForCreateWithoutConsentPurposeChannel(t *testing.T) {
+	consentPurposes := NewConsentPurpose(
+		WithConsentPurposeId(1),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	pr, _ := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err := validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Channel is required for consentPurpose")
+}
+
+func TestNewPermissionRequestForCreateWithoutConsentPurposeEnabled(t *testing.T) {
+	consentPurposes := NewConsentPurpose(
+		WithConsentPurposeId(1),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	pr, _ := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err := validateForPermissionCreate(pr)
+	assert.EqualError(t, err, "FullContactError: Channel is required for consentPurpose")
+}
+
+func TestNewPermissionRequestForCreateWithoutConsentPurposeTtl(t *testing.T) {
+	consentPurposes := NewConsentPurpose(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeEnabled(true))
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	_, err := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
 	assert.NoError(t, err)
 }
 
 func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -342,17 +430,16 @@ func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
 		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
-	err = validateForPermissionCreate(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Collection Method is required for PermissionRequest")
 }
 
 func TestNewPermissionRequestForCreateWithoutCollectionLocation(t *testing.T) {
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -364,17 +451,16 @@ func TestNewPermissionRequestForCreateWithoutCollectionLocation(t *testing.T) {
 		WithCollectionMethodForPermission("cookiePopUp"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
-	err = validateForPermissionCreate(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Collection Location is required for PermissionRequest")
 }
 
 func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -386,17 +472,16 @@ func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
 		WithCollectionMethodForPermission("cookiePopUp"),
 		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
 		WithTermsServiceForPermission("http://foo.tos"))
-	err = validateForPermissionCreate(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Policy URL is required for PermissionRequest")
 }
 
 func TestNewPermissionRequestForCreateWithoutTermsService(t *testing.T) {
-	consentPurposes, err := NewConsentPurpose(
+	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
-	assert.NoError(t, err)
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithLocationForMultifieldRequest(NewLocation(
@@ -408,7 +493,7 @@ func TestNewPermissionRequestForCreateWithoutTermsService(t *testing.T) {
 		WithCollectionMethodForPermission("cookiePopUp"),
 		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
 		WithPolicyUrlForPermission("http://foo.baz"))
-	err = validateForPermissionCreate(pr)
+	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Terms of Service is required for PermissionRequest")
 }
 

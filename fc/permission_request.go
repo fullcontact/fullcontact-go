@@ -59,6 +59,13 @@ func validateForPermissionCreate(request *PermissionRequest) error {
 	if err != nil {
 		return err
 	}
+	for _, consentPurpose := range request.ConsentPurposes{
+		print(consentPurpose)
+		err = validateConsentPurpose(consentPurpose)
+		if err != nil {
+			return err
+		}
+	}
 	err = request.Query.validate()
 	return err
 }
@@ -180,17 +187,12 @@ type ConsentPurpose struct {
 	Enabled			bool		`json:"enabled"`
 }
 
-func NewConsentPurpose(options ...ConsentPurposeOption) (*ConsentPurpose, error) {
+func NewConsentPurpose(options ...ConsentPurposeOption) *ConsentPurpose {
 	consentPurpose := &ConsentPurpose{}
 	for _, opts := range options {
 		opts(consentPurpose)
 	}
-
-	err := validateConsentPurpose(consentPurpose)
-	if err != nil {
-		consentPurpose = nil
-	}
-	return consentPurpose, nil
+	return consentPurpose
 }
 
 func validateConsentPurpose(consentPurpose *ConsentPurpose) error {
