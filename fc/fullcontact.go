@@ -727,9 +727,9 @@ func setPermissionFindResponse(apiResponse *APIResponse) {
 		apiResponse.Err = err
 		return
 	}
-	var permissionFindResponse []*PermissionFindResponse
+	var response []*PermissionFindResponse
 	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &permissionFindResponse)
+		err = json.Unmarshal(bodyBytes, &response)
 		if err != nil {
 			apiResponse.Err = err
 			return
@@ -738,7 +738,7 @@ func setPermissionFindResponse(apiResponse *APIResponse) {
 	apiResponse.Status = apiResponse.RawHttpResponse.Status
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
-	apiResponse.PermissionFindResponse = permissionFindResponse
+	apiResponse.PermissionFindResponse = response
 }
 
 func setPermissionVerifyResponse(apiResponse *APIResponse) {
@@ -748,9 +748,9 @@ func setPermissionVerifyResponse(apiResponse *APIResponse) {
 		apiResponse.Err = err
 		return
 	}
-	var permissionVerifyResponse PermissionVerifyResponse
+	var response ConsentPurposeResponse
 	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &permissionVerifyResponse)
+		err = json.Unmarshal(bodyBytes, &response)
 		if err != nil {
 			apiResponse.Err = err
 			return
@@ -759,7 +759,7 @@ func setPermissionVerifyResponse(apiResponse *APIResponse) {
 	apiResponse.Status = apiResponse.RawHttpResponse.Status
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
-	apiResponse.PermissionVerifyResponse = &permissionVerifyResponse
+	apiResponse.PermissionVerifyResponse = &response
 }
 
 func setPermissionCurrentResponse(apiResponse *APIResponse) {
@@ -769,9 +769,9 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 		apiResponse.Err = err
 		return
 	}
-	var permissionCurrentResponse map[string]map[string]PermissionCurrentResponse
+	var response map[string]map[string]ConsentPurposeResponse
 	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &permissionCurrentResponse)
+		err = json.Unmarshal(bodyBytes, &response)
 		if err != nil {
 			apiResponse.Err = err
 			return
@@ -780,7 +780,7 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 	apiResponse.Status = apiResponse.RawHttpResponse.Status
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
-	apiResponse.PermissionCurrentResponse = permissionCurrentResponse
+	apiResponse.PermissionCurrentResponse = response
 }
 
 func min(x, y int) int {

@@ -198,7 +198,7 @@ func main() {
 	multifieldRequest, err := fc.NewMultifieldRequest(
 		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
 
-	consentPurposes, err := fc.NewConsentPurposes(
+	consentPurpose, err := fc.NewConsentPurpose(
 		fc.WithConsentPurposeId(1),
 		fc.WithConsentPurposeChannel("web"),
 		fc.WithConsentPurposeTtl(365),
@@ -206,7 +206,7 @@ func main() {
 
 	permissionCreateRequest, err := fc.NewPermissionRequest(
 		fc.WithMultifieldRequestForPermission(multifieldRequest),
-		fc.WithConsentPurposeForPermission(consentPurposes),
+		fc.WithConsentPurposeForPermission(consentPurpose),
 		fc.WithCollectionMethodForPermission("cookiePopUp"),
 		fc.WithCollectionLocationForPermission("https://kenblahblah.com"),
 		fc.WithPolicyUrlForPermission("http://foo.baz"),

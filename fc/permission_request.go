@@ -7,7 +7,7 @@ type PermissionRequestOption func(ar *PermissionRequest)
 type PermissionRequest struct {
 	Timestamp  			int							`json:"timestamp,omitempty"`
 	Query    			*MultifieldRequest			`json:"query,omitempty"`
-	ConsentPurposes		[]*ConsentPurposes 			`json:"consentPurposes,omitempty"`
+	ConsentPurposes		[]*ConsentPurpose 			`json:"consentPurposes,omitempty"`
 	Locale     			string      				`json:"locale,omitempty"`
 	IpAddress			string						`json:"ipAddress,omitempty"`
 	Language     		string      				`json:"language,omitempty"`
@@ -93,19 +93,19 @@ func WithMultifieldRequestForPermission(multifieldRequest *MultifieldRequest) Pe
 	}
 }
 
-func WithConsentPurposeForPermission(consentPurpose *ConsentPurposes) PermissionRequestOption {
+func WithConsentPurposeForPermission(consentPurpose *ConsentPurpose) PermissionRequestOption {
 	return func(pr *PermissionRequest) {
 		if pr.ConsentPurposes == nil {
-			pr.ConsentPurposes = make([]*ConsentPurposes, 0)
+			pr.ConsentPurposes = make([]*ConsentPurpose, 0)
 		}
 		pr.ConsentPurposes = append(pr.ConsentPurposes, consentPurpose)
 	}
 }
 
-func WithConsentPurposesForPermission(consentPurpose []*ConsentPurposes) PermissionRequestOption {
+func WithConsentPurposesForPermission(consentPurpose []*ConsentPurpose) PermissionRequestOption {
 	return func(pr *PermissionRequest) {
 		if pr.ConsentPurposes == nil {
-			pr.ConsentPurposes = make([]*ConsentPurposes, 0)
+			pr.ConsentPurposes = make([]*ConsentPurpose, 0)
 		}
 		pr.ConsentPurposes = append(pr.ConsentPurposes, consentPurpose...)
 	}
@@ -170,3 +170,73 @@ func WithChannelForPermission(channel string) PermissionRequestOption {
 		pr.Channel = channel
 	}
 }
+
+type ConsentPurposeOption func(consentPurposes *ConsentPurpose)
+
+type ConsentPurpose struct {
+	PurposeId		int			`json:"purposeId"`
+	Channel			[]string	`json:"channel"`
+	Ttl				int			`json:"ttl"`
+	Enabled			bool		`json:"enabled"`
+}
+
+func NewConsentPurpose(options ...ConsentPurposeOption) (*ConsentPurpose, error) {
+	consentPurpose := &ConsentPurpose{}
+	for _, opts := range options {
+		opts(consentPurpose)
+	}
+
+	err := validateConsentPurpose(consentPurpose)
+	if err != nil {
+		consentPurpose = nil
+	}
+	return consentPurpose, nil
+}
+
+func validateConsentPurpose(consentPurpose *ConsentPurpose) error {
+	if consentPurpose.PurposeId == 0 {
+		return NewFullContactError("Purpose id is required for consentPurpose")
+	} else if consentPurpose.Channel == nil {
+		return NewFullContactError("Channel is required for consentPurpose")
+	} else if &consentPurpose.Enabled == nil {
+		return NewFullContactError("Enabled is required for consentPurpose")
+	}
+	return nil
+}
+
+func WithConsentPurposeId(purposeId int) ConsentPurposeOption {
+	return func(consentPurpose *ConsentPurpose) {
+		consentPurpose.PurposeId = purposeId
+	}
+}
+
+func WithConsentPurposeChannel(channel string) ConsentPurposeOption {
+	return func(consentPurpose *ConsentPurpose) {
+		if consentPurpose.Channel == nil {
+			consentPurpose.Channel = make([]string, 0)
+		}
+		consentPurpose.Channel = append(consentPurpose.Channel, channel)
+	}
+}
+
+func WithConsentPurposeChannels(channel []string) ConsentPurposeOption {
+	return func(consentPurpose *ConsentPurpose) {
+		if consentPurpose.Channel == nil {
+			consentPurpose.Channel = make([]string, 0)
+		}
+		consentPurpose.Channel = append(consentPurpose.Channel, channel...)
+	}
+}
+
+func WithConsentPurposeTtl(ttl int) ConsentPurposeOption {
+	return func(consentPurpose *ConsentPurpose) {
+		consentPurpose.Ttl = ttl
+	}
+}
+
+func WithConsentPurposeEnabled(enabled bool) ConsentPurposeOption {
+	return func(consentPurpose *ConsentPurpose) {
+		consentPurpose.Enabled = enabled
+	}
+}
+

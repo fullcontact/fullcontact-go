@@ -12,7 +12,7 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 	assert.NoError(t, err)
 	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
 	assert.NoError(t, err)
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -302,7 +302,7 @@ func TestNewPermissionRequestWithValidName(t *testing.T) {
 }
 
 func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -325,7 +325,7 @@ func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
 }
 
 func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -347,7 +347,7 @@ func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
 }
 
 func TestNewPermissionRequestForCreateWithoutCollectionLocation(t *testing.T) {
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -369,7 +369,7 @@ func TestNewPermissionRequestForCreateWithoutCollectionLocation(t *testing.T) {
 }
 
 func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),
@@ -391,7 +391,7 @@ func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
 }
 
 func TestNewPermissionRequestForCreateWithoutTermsService(t *testing.T) {
-	consentPurposes, err := NewConsentPurposes(
+	consentPurposes, err := NewConsentPurpose(
 		WithConsentPurposeId(1),
 		WithConsentPurposeChannel("web"),
 		WithConsentPurposeTtl(365),

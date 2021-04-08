@@ -16,8 +16,8 @@ type APIResponse struct {
 	TagsResponse             	 *TagsResponse
 	AudienceResponse         	 *AudienceResponse
 	PermissionFindResponse 	  	 []*PermissionFindResponse
-	PermissionCurrentResponse	 map[string]map[string]PermissionCurrentResponse
-	PermissionVerifyResponse	 *PermissionVerifyResponse
+	PermissionCurrentResponse	 map[string]map[string]ConsentPurposeResponse
+	PermissionVerifyResponse	 *ConsentPurposeResponse
 	StatusCode                	 int
 	Status                   	 string
 	IsSuccessful             	 bool
