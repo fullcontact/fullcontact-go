@@ -21,5 +21,5 @@ type ConsentPurposeResponse struct {
 	Channel			string		`json:"channel"`
 	PurposeId		int			`json:"purposeId"`
 	PurposeName		string		`json:"purposeName"`
-	timestamp 		int			`json:"timestamp"`
+	Timestamp 		int			`json:"timestamp"`
 }
