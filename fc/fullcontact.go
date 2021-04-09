@@ -432,7 +432,7 @@ Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionDelete(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
 		return ch
 	}
 	err := validateForPermissionDelete(multifieldRequest)
@@ -456,7 +456,7 @@ Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionFind(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
 		return ch
 	}
 	err := validateForPermissionFind(multifieldRequest)
@@ -480,7 +480,7 @@ Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionCurrent(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Permission Request can't be nil"))
+		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
 		return ch
 	}
 	err := validateForPermissionCurrent(multifieldRequest)

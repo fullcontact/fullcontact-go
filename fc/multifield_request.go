@@ -20,7 +20,6 @@ func NewMultifieldRequest(option ...MultifieldRequestOption) (*MultifieldRequest
 	multifieldRequest := &MultifieldRequest{}
 
 	for _, opt := range option {
-		print(option)
 		opt(multifieldRequest)
 	}
 	return multifieldRequest, nil

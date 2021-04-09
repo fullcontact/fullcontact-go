@@ -24,7 +24,6 @@ func NewPermissionRequest(option ...PermissionRequestOption) (*PermissionRequest
 	permissionRequest := &PermissionRequest{}
 
 	for _, opt := range option {
-		print(option)
 		opt(permissionRequest)
 	}
 	return permissionRequest, nil
@@ -60,7 +59,6 @@ func validateForPermissionCreate(request *PermissionRequest) error {
 		return err
 	}
 	for _, consentPurpose := range request.ConsentPurposes{
-		print(consentPurpose)
 		err = validateConsentPurpose(consentPurpose)
 		if err != nil {
 			return err
