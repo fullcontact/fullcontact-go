@@ -374,8 +374,6 @@ func TestNewPermissionRequestForCreateWithMultipleConsentPurposeWithoutChannel(t
 		WithConsentPurposeEnabled(true))
 	consentPurpose2 := NewConsentPurpose(
 		WithConsentPurposeId(2),
-		WithConsentPurposeChannel("phone"),
-		WithConsentPurposeChannel("mobile"),
 		WithConsentPurposeTtl(365),
 		WithConsentPurposeEnabled(true))
 	multifieldRequest, _ := NewMultifieldRequest(
@@ -392,7 +390,7 @@ func TestNewPermissionRequestForCreateWithMultipleConsentPurposeWithoutChannel(t
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
-	assert.NoError(t, err)
+	assert.EqualError(t, err, "FullContactError: Channel is required for consentPurpose")
 }
 
 func TestNewPermissionRequestForCreateWithoutConsentPurposeId(t *testing.T) {
