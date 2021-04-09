@@ -105,3 +105,303 @@ func TestPermissionVerify(t *testing.T) {
 	assert.Equal(t, "Information storage & access", response.PurposeName)
 	assert.Equal(t, 1617962540547, response.Timestamp)
 }
+
+func TestPermissionCreateStatus202(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 202)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 202, resp.StatusCode)
+}
+
+func TestPermissionCreateStatus204(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 204)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 204, resp.StatusCode)
+}
+
+func TestPermissionCreateStatus401(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 401)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestPermissionCreateStatus403(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 403)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 403, resp.StatusCode)
+}
+
+func TestPermissionCreateStatus404(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 404)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 404, resp.StatusCode)
+}
+
+func TestPermissionCreateStatus500(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCreateUrl, "", 500)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus202(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 202)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 202, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus204(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 204)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 204, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus401(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 401)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus403(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 403)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 403, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus404(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 404)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 404, resp.StatusCode)
+}
+
+func TestPermissionDeleteStatus500(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionDeleteUrl, "", 500)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
+func TestPermissionFindStatus202(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 202)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 202, resp.StatusCode)
+}
+
+func TestPermissionFindStatus204(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 204)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 204, resp.StatusCode)
+}
+
+func TestPermissionFindStatus401(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 401)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestPermissionFindStatus403(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 403)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 403, resp.StatusCode)
+}
+
+func TestPermissionFindStatus404(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 404)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 404, resp.StatusCode)
+}
+
+func TestPermissionFindStatus500(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, "", 500)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus202(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 202)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 202, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus204(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 204)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 204, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus401(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 401)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus403(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 403)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 403, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus404(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 404)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 404, resp.StatusCode)
+}
+
+func TestPermissionCurrentStatus500(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionCurrentUrl, "", 500)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus202(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 202)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 202, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus204(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 204)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 204, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus401(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 401)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus403(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 403)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 403, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus404(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 404)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 404, resp.StatusCode)
+}
+
+func TestPermissionVerifyStatus500(t *testing.T) {
+	ch := make(chan *APIResponse)
+	fcTestClient, testServer := getTestServerAndClient(permissionVerifyUrl, "", 500)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	assert.False(t, resp.IsSuccessful)
+	assert.Equal(t, 500, resp.StatusCode)
+}
