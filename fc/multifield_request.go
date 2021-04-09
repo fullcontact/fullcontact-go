@@ -47,7 +47,7 @@ func (multifieldRequest *MultifieldRequest) isValidLocation() bool {
 
 func (multifieldRequest *MultifieldRequest) validate() error {
 	if !multifieldRequest.isQueryable() {
-		if multifieldRequest.Location == nil && multifieldRequest.Name == nil {
+		if multifieldRequest.Location == nil && multifieldRequest.Name == nil && !isPopulated(multifieldRequest.Placekey) {
 			return nil
 		} else if (multifieldRequest.Location != nil || isPopulated(multifieldRequest.Placekey)) && multifieldRequest.Name != nil {
 			if (multifieldRequest.Location != nil && multifieldRequest.isValidLocation()) || isPopulated(multifieldRequest.Placekey) {

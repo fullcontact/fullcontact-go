@@ -308,6 +308,13 @@ func TestNewPermissionRequestWithValidNameWithValidPlacekey(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestNewPermissionRequestWithPlacekeyOnly(t *testing.T) {
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithPlacekeyForMultifieldRequest("226@5z4-zvy-ffz"))
+	err := validateForPermissionFind(multifieldRequest)
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
+}
+
 func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
 	consentPurposes := NewConsentPurpose(
 		WithConsentPurposeId(1),
@@ -322,6 +329,64 @@ func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
 	pr, _ := NewPermissionRequest(
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err := validateForPermissionCreate(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPermissionRequestForCreateWithMultipleConsentPurpose(t *testing.T) {
+	consentPurpose1 := NewConsentPurpose(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	consentPurpose2 := NewConsentPurpose(
+		WithConsentPurposeId(2),
+		WithConsentPurposeChannel("phone"),
+		WithConsentPurposeChannel("mobile"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	pr, _ := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(consentPurpose1),
+		WithConsentPurposeForPermission(consentPurpose2),
+		WithCollectionMethodForPermission("cookiePopUp"),
+		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithPolicyUrlForPermission("http://foo.baz"),
+		WithTermsServiceForPermission("http://foo.tos"))
+	err := validateForPermissionCreate(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPermissionRequestForCreateWithMultipleConsentPurposeWithoutChannel(t *testing.T) {
+	consentPurpose1 := NewConsentPurpose(
+		WithConsentPurposeId(1),
+		WithConsentPurposeChannel("web"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	consentPurpose2 := NewConsentPurpose(
+		WithConsentPurposeId(2),
+		WithConsentPurposeChannel("phone"),
+		WithConsentPurposeChannel("mobile"),
+		WithConsentPurposeTtl(365),
+		WithConsentPurposeEnabled(true))
+	multifieldRequest, _ := NewMultifieldRequest(
+		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
+		WithLocationForMultifieldRequest(NewLocation(
+			WithAddressLine1("123/23"),
+			WithPostalCode("23432"))))
+	pr, _ := NewPermissionRequest(
+		WithMultifieldRequestForPermission(multifieldRequest),
+		WithConsentPurposeForPermission(consentPurpose1),
+		WithConsentPurposeForPermission(consentPurpose2),
 		WithCollectionMethodForPermission("cookiePopUp"),
 		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
 		WithPolicyUrlForPermission("http://foo.baz"),
@@ -549,7 +614,7 @@ func TestNilPermissionDeleteRequest(t *testing.T) {
 	ch := fcTestClient.PermissionDelete(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
 }
 
 func TestNilPermissionFindRequest(t *testing.T) {
@@ -557,7 +622,7 @@ func TestNilPermissionFindRequest(t *testing.T) {
 	ch := fcTestClient.PermissionFind(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
 }
 
 func TestNilPermissionCurrentRequest(t *testing.T) {
@@ -565,7 +630,7 @@ func TestNilPermissionCurrentRequest(t *testing.T) {
 	ch := fcTestClient.PermissionCurrent(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Permission Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
 }
 
 func TestNilPermissionVerifyRequest(t *testing.T) {
