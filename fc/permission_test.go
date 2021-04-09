@@ -59,7 +59,7 @@ func TestPermissionCurrent(t *testing.T) {
 
 func TestPermissionFind(t *testing.T) {
 	ch := make(chan *APIResponse)
-	respJson := "[{\"permissionType\":\"create\",\"permissionId\":\"1c99f4fb-96a2-46f4-8fd7-64750a591e05\",\"consentPurposes\":[{\"ttl\":365,\"enabled\":true,\"channel\":\"web\",\"purposeId\":1,\"purposeName\":\"Information storage & access\",\"timestamp\":1617628580297}],\"locale\":null,\"ipAddress\":null,\"language\":null,\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"Can we get a snapshot of where someone is opting in/out here?\",\"policyUrl\":\"https://www.fullcontact.com/privacy/privacy-policy\",\"termsService\":\"https://www.fullcontact.com/privacy/terms-of-use\",\"timestamp\":null,\"created\":1617628580297}]"
+	respJson := "[{\"permissionType\":\"create\",\"permissionId\":\"1c99f4fb-96a2-46f4-8fd7-64750a591e05\",\"consentPurposes\":[{\"ttl\":365,\"enabled\":true,\"channel\":\"web\",\"purposeId\":1,\"purposeName\":\"Information storage & access\",\"timestamp\":1617628580297}],\"locale\":null,\"ipAddress\":null,\"language\":null,\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"https://kenblahblah.com\",\"policyUrl\":\"https://www.fullcontact.com/privacy/privacy-policy\",\"termsService\":\"https://www.fullcontact.com/privacy/terms-of-use\",\"timestamp\":null,\"created\":1617628580297}]"
 	fcTestClient, testServer := getTestServerAndClient(permissionFindUrl, respJson, 200)
 	defer testServer.Close()
 	go fcTestClient.do(testServer.URL, nil, ch)
@@ -80,7 +80,7 @@ func TestPermissionFind(t *testing.T) {
 	assert.Equal(t, "", response[0].IpAddress)
 	assert.Equal(t, "", response[0].Language)
 	assert.Equal(t, "cookiePopUp", response[0].CollectionMethod)
-	assert.Equal(t, "Can we get a snapshot of where someone is opting in/out here?", response[0].CollectionLocation)
+	assert.Equal(t, "https://kenblahblah.com", response[0].CollectionLocation)
 	assert.Equal(t, "https://www.fullcontact.com/privacy/privacy-policy", response[0].PolicyUrl)
 	assert.Equal(t, "https://www.fullcontact.com/privacy/terms-of-use", response[0].TermsService)
 	assert.Equal(t, 0, response[0].Timestamp)

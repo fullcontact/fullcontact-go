@@ -34,7 +34,7 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 		WithMaidsForMultifieldRequest("abcd-123-abcd-1234-abcdlkjhasdfgh"),
 		WithMaidsForMultifieldRequest("1234-snbk-lkldiemvmruixp-2kdp-vdm"),)
 	assert.NoError(t, err)
-	requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]},\"consentPurposes\":[{\"purposeId\":1,\"channel\":[\"web\"],\"ttl\":365,\"enabled\":true}],\"locale\":\"US\",\"ipAddress\":\"127.0.0.1\",\"language\":\"en\",\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"Can we get a snapshot of where someone is opting in/out here?\",\"tcf\":\"some.valid.tcfv2.string\",\"policyUrl\":\"http://foo.baz\",\"termsService\":\"http://foo.tos\"}"
+	requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]},\"consentPurposes\":[{\"purposeId\":1,\"channel\":[\"web\"],\"ttl\":365,\"enabled\":true}],\"locale\":\"US\",\"ipAddress\":\"127.0.0.1\",\"language\":\"en\",\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"https://kenblahblah.com\",\"tcf\":\"some.valid.tcfv2.string\",\"policyUrl\":\"http://foo.baz\",\"termsService\":\"http://foo.tos\"}"
 	pr, err := NewPermissionRequest(
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
@@ -42,7 +42,7 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 		WithIpAddressForPermission("127.0.0.1"),
 		WithLanguageForPermission("en"),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithTcfForPermission("some.valid.tcfv2.string"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
@@ -330,7 +330,7 @@ func TestNewPermissionRequestForCreateWithConsentPurpose(t *testing.T) {
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -359,7 +359,7 @@ func TestNewPermissionRequestForCreateWithMultipleConsentPurpose(t *testing.T) {
 		WithConsentPurposeForPermission(consentPurpose1),
 		WithConsentPurposeForPermission(consentPurpose2),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -386,7 +386,7 @@ func TestNewPermissionRequestForCreateWithMultipleConsentPurposeWithoutChannel(t
 		WithConsentPurposeForPermission(consentPurpose1),
 		WithConsentPurposeForPermission(consentPurpose2),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -406,7 +406,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeId(t *testing.T) {
 			WithConsentPurposeTtl(365),
 			WithConsentPurposeEnabled(true))),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -427,7 +427,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeChannel(t *testing.T)
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -448,7 +448,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeEnabled(t *testing.T)
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -469,7 +469,7 @@ func TestNewPermissionRequestForCreateWithoutConsentPurposeTtl(t *testing.T) {
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	assert.NoError(t, err)
@@ -489,7 +489,7 @@ func TestNewPermissionRequestForCreateWithoutCollectionMethod(t *testing.T) {
 	pr, _ := NewPermissionRequest(
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
@@ -532,7 +532,7 @@ func TestNewPermissionRequestForCreateWithoutPolicyUrl(t *testing.T) {
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithTermsServiceForPermission("http://foo.tos"))
 	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Policy URL is required for PermissionRequest")
@@ -553,7 +553,7 @@ func TestNewPermissionRequestForCreateWithoutTermsService(t *testing.T) {
 		WithMultifieldRequestForPermission(multifieldRequest),
 		WithConsentPurposeForPermission(consentPurposes),
 		WithCollectionMethodForPermission("cookiePopUp"),
-		WithCollectionLocationForPermission("Can we get a snapshot of where someone is opting in/out here?"),
+		WithCollectionLocationForPermission("https://kenblahblah.com"),
 		WithPolicyUrlForPermission("http://foo.baz"))
 	err := validateForPermissionCreate(pr)
 	assert.EqualError(t, err, "FullContactError: Terms of Service is required for PermissionRequest")
