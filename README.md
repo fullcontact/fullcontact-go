@@ -67,6 +67,13 @@ your integration.
     - `identity.resolve`
     - `identity.delete`
 
+- _[Permission](https://platform.fullcontact.com/docs/apis/permission/introduction)_
+    - `permission.create`
+    - `permission.delete`
+    - `permission.find`
+    - `permission.current`
+    - `permission.verify`
+
 ## Providing Authentication to FullContact Client
 FullContact client uses ```CredentialsProvider``` interface for Authentication. Different ways 
 to provide authentication:
@@ -165,6 +172,7 @@ such as:
 - `PersonId`: _string_
 - `LiNonId`: _string_
 - `PartnerId`: _string_
+- `Placekey`: _string_
 
 
 ```go
@@ -300,6 +308,7 @@ such as:
 - `PersonId`: _string_
 - `LiNonId`: _string_
 - `PartnerId`: _string_
+- `Placekey`: _string_
 
 ```go
 resolveRequest, err := fc.NewResolveRequest(
@@ -441,3 +450,159 @@ if resp.IsSuccessful {
 }
 ```
 
+## Permission
+[Permission API Reference](https://platform.fullcontact.com/docs/apis/permission/introduction)
+- `permission.create`
+- `permission.delete`
+- `permission.find`
+- `permission.current`
+- `permission.verify`
+
+#### Permission Request
+Permission uses the following type of parameters for it's requests
+
+`PermissionRequest` for
+- `permission.create`
+- `permission.verify`
+
+and `MultifieldRequest` for
+- `permission.delete`
+- `permission.find`
+- `permission.current`
+
+You can build a Permission Request by using `NewPermissionRequest`
+and setting different input parameters that you have.
+ 
+All Permission Api requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
+
+- `Emails`: _[]string_
+- `Phones`: _[]string_
+- `Location`: _*Location_
+    - `AddressLine1`: _string_
+    - `AddressLine2`: _string_
+    - `City`: _string_
+    - `Region`: _string_
+    - `RegionCode`: _string_
+    - `PostalCode`: _string_
+- `Name`: _*PersonName_
+    - `Full`: _string_
+    - `Given`: _string_
+    - `Family`: _string_
+- `Profiles`: _[]*Profile_
+    - `Service`: _string_
+    - `Username`: _string_
+    - `Userid`: _string_
+    - `Url`: _string_
+- `Maids`: _[]string_
+- `RecordId`: _string_
+- `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
+- `Placekey`: _string_
+
+```go
+multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+permissionRequest, err := fc.NewPermissionRequest(
+		fc.WithMultifieldRequestForPermission(multifieldRequest))
+```
+
+### Permission Request
+All permission methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
+
+The following are the corresponding response classes
+- `PermissionCreatedResponse` - permission.create
+- `PermissionDeleteResponse` - permission.delete
+- `PermissionVerifyResponse` - permission.verify
+- `PermissionFindResponse` - permission.find
+- `PermissionCurrentResponse` - permission.current
+
+`PermissionCreate` and `PermissionVerify` requires a `ResolveRequest` as parameter while the rest requires `MultifieldRequest` as parameter
+
+### Permission Create
+
+#### Parameters:
+Supported fields in query:
+- `query`: MultifieldRequest - [required]
+- `consentPurposes`: List[ConsentPurposes] - [required]
+- `locale`: string
+- `ipAddress`: string
+- `language`: string
+- `collectionMethod`: string - [required]
+- `collectionLocation`: string - [required]
+- `policyUrl`: string - [required]
+- `termsService`: string - [required]
+- `tcf`: string
+- `timestamp`: int
+
+#### Returns:
+class: `PermissionCreateResponse`. A basic API response with response code as 202 if successful.
+
+### Permission Verify
+#### Parameters:
+Supported fields in query:
+- `query`: MultifieldRequest - [required]
+- `purposeId`: int - [required]
+- `channel`: string - [required]
+
+#### Returns:
+class: `PermissionVerifyResponse` with following fields.
+
+- `ttl`: string
+- `enabled`: bool
+- `channel`: string
+- `purposeId`: int
+- `purposeName`: string
+- `timestamp`: int
+
+### Permission Delete
+#### Parameters:
+Query takes a `MultiFieldReq`
+
+#### Returns:
+class: `PermissionDeleteResponse`. A basic API response with response code as 202 if successful.
+
+### Permission Find
+#### Parameters:
+Query takes a `MultiFieldReq`
+
+#### Returns:
+class: `PermissionFindResponse` with list of Permissions.
+
+### Permission Current
+#### Parameters:
+Query takes a `MultiFieldReq`
+
+#### Returns:
+class: `PermissionCurrentResponse` with set of current permissions
+
+```go
+resp := <-fcClient.PermissionCreate(permissionRequest)
+fmt.Printf("Permission Create API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Println("Permission Created Successfully!")
+}
+resp = <-fcClient.PermissionVerify(permissionRequest)
+fmt.Printf("Permission Verify API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Printf("Permissions List: %v", resp.PermissionVerifyResponse)
+}
+
+resp = <-fcClient.PermissionDelete(multifieldRequest)
+fmt.Printf("Permission Delete API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Println("Permission Deleted Successfully!")
+}
+
+resp = <-fcClient.PermissionFind(multifieldRequest)
+fmt.Printf("Permission Find API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Printf("Permission Find: %v", resp.PermissionFindResponse)
+}
+
+resp = <-fcClient.PermissionCurrent(multifieldRequest)
+fmt.Printf("Permission Current API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Printf("Permission Current: %v", resp.PermissionCurrentResponse)
+}
+```

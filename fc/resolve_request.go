@@ -14,6 +14,7 @@ type ResolveRequest struct {
 	PartnerId string      `json:"partnerId,omitempty"`
 	LiNonId   string      `json:"li_nonid,omitempty"`
 	Tags      []*Tag      `json:"tags,omitempty"`
+	Placekey  string      `json:"placekey,omitempty"`
 }
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
@@ -36,7 +37,9 @@ func (resolveRequest *ResolveRequest) isQueryable() bool {
 
 func validateResolveRequest(resolveRequest *ResolveRequest) error {
 	if !resolveRequest.isQueryable() {
-		if resolveRequest.Location == nil && resolveRequest.Name == nil {
+		if resolveRequest.Location == nil && resolveRequest.Name == nil && !isPopulated(resolveRequest.Placekey){
+			return nil
+		} else if isPopulated(resolveRequest.Placekey) && resolveRequest.Name != nil {
 			return nil
 		} else if resolveRequest.Location != nil && resolveRequest.Name != nil {
 			// Validating Location fields
@@ -57,7 +60,7 @@ func validateResolveRequest(resolveRequest *ResolveRequest) error {
 			}
 		}
 		return NewFullContactError(
-			"If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+			"If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 	}
 	return nil
 }
@@ -217,5 +220,11 @@ func WithTagsForResolve(tags []*Tag) ResolveRequestOption {
 			resolveRequest.Tags = make([]*Tag, 0)
 		}
 		resolveRequest.Tags = append(resolveRequest.Tags, tags...)
+	}
+}
+
+func WithPlacekeyForResolve(placekey string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.Placekey = placekey
 	}
 }

@@ -63,7 +63,7 @@ func TestNewPersonRequestWithNameOnlyWithoutQueryable(t *testing.T) {
 			Full: "Marian C Reed",
 		}))
 	err := validatePersonRequest(pr)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewPersonRequestWithLocationOnlyWithQueryable(t *testing.T) {
@@ -90,7 +90,7 @@ func TestNewPersonRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
 	err := validatePersonRequest(pr)
-	assert.EqualError(t, err, "FullContactError: If you want to use 'location' or 'name' as an input, both must be present and they must have non-blank values")
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewPersonRequestWithLocationWithoutAddressLine1WithQueryable(t *testing.T) {
@@ -212,6 +212,21 @@ func TestNewPersonRequestWithValidLocation3(t *testing.T) {
 			WithRegionForLocation("123123"))))
 	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithValidNameWithPlacekey(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithName(&PersonName{Full: "Marian C Reed"}),
+		WithPlacekey("226@5z4-zvy-ffz"))
+	err := validatePersonRequest(pr)
+	assert.NoError(t, err)
+}
+
+func TestNewPersonRequestWithPlacekeyOnly(t *testing.T) {
+	pr, _ := NewPersonRequest(
+		WithPlacekey("226@5z4-zvy-ffz"))
+	err := validatePersonRequest(pr)
+	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
 func TestNewPersonRequestWithValidName(t *testing.T) {
