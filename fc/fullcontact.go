@@ -130,6 +130,8 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setResolveResponseWithTags(apiResponse)
 		case tagsCreateUrl, tagsGetUrl, tagsDeleteUrl:
 			setTagsResponse(apiResponse)
+		case emailVerificationUrl:
+			setEmailVerificationResponse(apiResponse)
 		case audienceCreateUrl, audienceDownloadUrl:
 			setAudienceResponse(apiResponse)
 		case permissionCreateUrl:

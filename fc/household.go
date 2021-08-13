@@ -37,7 +37,7 @@ type LocationInfo struct {
 	DesignatedMarketArea     string `json:"designatedMarketArea"`
 	CoreBasedStatisticalArea string `json:"coreBasedStatisticalArea"`
 	NielsenCountySize        string `json:"nielsenCountySize"`
-	CongressionalDistrict    int    `json:"congressionalDistrict"`
+	CongressionalDistrict    string `json:"congressionalDistrict"`
 	NumericCountyCode        int    `json:"numericCountyCode"`
 	SeasonalAddress          bool   `json:"seasonalAddress"`
 }
