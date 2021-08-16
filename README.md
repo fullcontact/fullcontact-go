@@ -173,6 +173,9 @@ such as:
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
+- `ExpandedInterests`: _bool_
+- `VerifiedPhysical`: _bool_
+- `MaxMaids`: _int_
 
 
 ```go

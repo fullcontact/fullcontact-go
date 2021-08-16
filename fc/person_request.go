@@ -3,21 +3,24 @@ package fullcontact
 type PersonRequestOption func(pr *PersonRequest)
 
 type PersonRequest struct {
-	Emails     []string    `json:"emails,omitempty"`
-	Phones     []string    `json:"phones,omitempty"`
-	DataFilter []string    `json:"dataFilter,omitempty"`
-	Maid       []string    `json:"maids,omitempty"`
-	Location   *Location   `json:"location,omitempty"`
-	Name       *PersonName `json:"name,omitempty"`
-	Profiles   []*Profile  `json:"profiles,omitempty"`
-	WebhookUrl string      `json:"webhookUrl,omitempty"`
-	RecordId   string      `json:"recordId,omitempty"`
-	PersonId   string      `json:"personId,omitempty"`
-	PartnerId  string      `json:"partnerId,omitempty"`
-	LiNonId    string      `json:"li_nonid,omitempty"`
-	Confidence string      `json:"confidence,omitempty"`
-	Infer      bool        `json:"infer,omitempty"`
-	Placekey   string      `json:"placekey,omitempty"`
+	Emails            []string    `json:"emails,omitempty"`
+	Phones            []string    `json:"phones,omitempty"`
+	DataFilter        []string    `json:"dataFilter,omitempty"`
+	Maid              []string    `json:"maids,omitempty"`
+	Location          *Location   `json:"location,omitempty"`
+	Name              *PersonName `json:"name,omitempty"`
+	Profiles          []*Profile  `json:"profiles,omitempty"`
+	WebhookUrl        string      `json:"webhookUrl,omitempty"`
+	RecordId          string      `json:"recordId,omitempty"`
+	PersonId          string      `json:"personId,omitempty"`
+	PartnerId         string      `json:"partnerId,omitempty"`
+	LiNonId           string      `json:"li_nonid,omitempty"`
+	Confidence        string      `json:"confidence,omitempty"`
+	Infer             bool        `json:"infer,omitempty"`
+	Placekey          string      `json:"placekey,omitempty"`
+	VerifiedPhysical  bool        `json:"verifiedPhysical,omitempty"`
+	ExpandedInterests bool        `json:"expandedInterests,omitempty"`
+	MaxMaids          int         `json:"maxMaids,omitempty"`
 }
 
 func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest, error) {
@@ -48,7 +51,7 @@ func validatePersonRequest(pr *PersonRequest) error {
 		return NewFullContactError("Confidence value can only be 'LOW', 'MED', 'HIGH', 'MAX'")
 	}
 	if !pr.isQueryable() {
-		if (pr.Location == nil && pr.Name == nil && !isPopulated(pr.Placekey)) || (isPopulated(pr.Placekey) && pr.Name != nil ){
+		if (pr.Location == nil && pr.Name == nil && !isPopulated(pr.Placekey)) || (isPopulated(pr.Placekey) && pr.Name != nil) {
 			return nil
 		} else if pr.Location != nil && pr.Name != nil {
 			// Validating Location fields
@@ -221,5 +224,23 @@ func WithInfer(infer bool) PersonRequestOption {
 func WithPlacekey(placekey string) PersonRequestOption {
 	return func(pr *PersonRequest) {
 		pr.Placekey = placekey
+	}
+}
+
+func WithExpandedInterests(expandedInterests bool) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.ExpandedInterests = expandedInterests
+	}
+}
+
+func WithVerifiedPhysical(verifiedPhysical bool) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.VerifiedPhysical = verifiedPhysical
+	}
+}
+
+func WithMaxMaids(maxMaids int) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.MaxMaids = maxMaids
 	}
 }
