@@ -3,18 +3,20 @@ package fullcontact
 type ResolveRequestOption func(pr *ResolveRequest)
 
 type ResolveRequest struct {
-	Emails    []string    `json:"emails,omitempty"`
-	Phones    []string    `json:"phones,omitempty"`
-	Maid      []string    `json:"maids,omitempty"`
-	Location  *Location   `json:"location,omitempty"`
-	Name      *PersonName `json:"name,omitempty"`
-	Profiles  []*Profile  `json:"profiles,omitempty"`
-	RecordId  string      `json:"recordId,omitempty"`
-	PersonId  string      `json:"personId,omitempty"`
-	PartnerId string      `json:"partnerId,omitempty"`
-	LiNonId   string      `json:"li_nonid,omitempty"`
-	Tags      []*Tag      `json:"tags,omitempty"`
-	Placekey  string      `json:"placekey,omitempty"`
+	Emails      []string    `json:"emails,omitempty"`
+	Phones      []string    `json:"phones,omitempty"`
+	Maid        []string    `json:"maids,omitempty"`
+	Location    *Location   `json:"location,omitempty"`
+	Name        *PersonName `json:"name,omitempty"`
+	Profiles    []*Profile  `json:"profiles,omitempty"`
+	RecordId    string      `json:"recordId,omitempty"`
+	PersonId    string      `json:"personId,omitempty"`
+	PartnerId   string      `json:"partnerId,omitempty"`
+	LiNonId     string      `json:"li_nonid,omitempty"`
+	Tags        []*Tag      `json:"tags,omitempty"`
+	Placekey    string      `json:"placekey,omitempty"`
+	PanoramaId  string      `json:"panoramaId,omitempty"`
+	GeneratePid bool        `json:"generatePid,omitempty"`
 }
 
 func NewResolveRequest(option ...ResolveRequestOption) (*ResolveRequest, error) {
@@ -37,7 +39,7 @@ func (resolveRequest *ResolveRequest) isQueryable() bool {
 
 func validateResolveRequest(resolveRequest *ResolveRequest) error {
 	if !resolveRequest.isQueryable() {
-		if resolveRequest.Location == nil && resolveRequest.Name == nil && !isPopulated(resolveRequest.Placekey){
+		if resolveRequest.Location == nil && resolveRequest.Name == nil && !isPopulated(resolveRequest.Placekey) {
 			return nil
 		} else if isPopulated(resolveRequest.Placekey) && resolveRequest.Name != nil {
 			return nil
@@ -76,7 +78,7 @@ func validateForIdentityMap(request *ResolveRequest) error {
 			}
 		}
 	}
-	if !request.isQueryable(){
+	if !request.isQueryable() {
 		return NewFullContactError("Invalid map request, Any of Email, Phone, SocialProfile, Name and Location must be present")
 	}
 	err := validateResolveRequest(request)
@@ -226,5 +228,17 @@ func WithTagsForResolve(tags []*Tag) ResolveRequestOption {
 func WithPlacekeyForResolve(placekey string) ResolveRequestOption {
 	return func(resolveRequest *ResolveRequest) {
 		resolveRequest.Placekey = placekey
+	}
+}
+
+func WithPanoramaIDForResolve(panoramaId string) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.PanoramaId = panoramaId
+	}
+}
+
+func WithGeneratePidForResolve(generatePid bool) ResolveRequestOption {
+	return func(resolveRequest *ResolveRequest) {
+		resolveRequest.GeneratePid = generatePid
 	}
 }

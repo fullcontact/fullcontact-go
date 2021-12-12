@@ -132,6 +132,21 @@ func main() {
 		fmt.Printf("Tags: %v", resp.ResolveResponseWithTags.Tags)
 	}
 
+	//Identity Map Resolve
+	resolveRequest, err := fc.NewResolveRequest(
+		fc.WithRecordIdForResolve("r1"),
+		fc.WithEmailForResolve("bart@fullcontct.com"),
+		fc.WithGeneratePidForResolve(true))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	resp = <-fcClient.IdentityMapResolve(resolveRequest)
+	fmt.Printf("\n\nIdentity Map API Response: %v", resp)
+	if resp.IsSuccessful {
+		fmt.Printf("PersonIds Mapped: %v", resp.ResolveResponse.PersonIds)
+	}
+
 	//Identity Delete
 	resolveRequest, err = fc.NewResolveRequest(fc.WithRecordIdForResolve("r1"))
 	if err != nil {
@@ -217,7 +232,7 @@ func main() {
 	}
 
 	//Sending Permission Create request
-	resp = <- fcClient.PermissionCreate(permissionCreateRequest)
+	resp = <-fcClient.PermissionCreate(permissionCreateRequest)
 	fmt.Printf("Permission Create API Response: %v", resp)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Create Response: %v", resp)
@@ -225,7 +240,7 @@ func main() {
 
 	//Permission Find
 	//Sending Permission Find request which returns a channel of type `APIResponse`
-	resp = <- fcClient.PermissionFind(multifieldRequest)
+	resp = <-fcClient.PermissionFind(multifieldRequest)
 	fmt.Printf("Permission Find API Response: %v", resp)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Find Response: %v", resp.PermissionFindResponse)
@@ -233,7 +248,7 @@ func main() {
 
 	//Permission Current
 	//Sending Permission Current request which returns a channel of type `APIResponse`
-	resp = <- fcClient.PermissionCurrent(multifieldRequest)
+	resp = <-fcClient.PermissionCurrent(multifieldRequest)
 	fmt.Printf("Permission Current API Response: %v", resp)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Current Response: %v", resp.PermissionCurrentResponse)
@@ -246,7 +261,7 @@ func main() {
 		fc.WithChannelForPermission("web"))
 
 	//Sending Permission Verify request which returns a channel of type `APIResponse`
-	resp = <- fcClient.PermissionVerify(permissionVerifyRequest)
+	resp = <-fcClient.PermissionVerify(permissionVerifyRequest)
 	fmt.Printf("Permission Verify API Response: %v", resp)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Verify Response: %v", resp.PermissionVerifyResponse)
@@ -254,7 +269,7 @@ func main() {
 
 	//Permission Delete
 	//Sending Permission Delete request
-	resp = <- fcClient.PermissionDelete(multifieldRequest)
+	resp = <-fcClient.PermissionDelete(multifieldRequest)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Delete API Response: %v", resp)
 	}

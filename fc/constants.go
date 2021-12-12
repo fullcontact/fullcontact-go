@@ -13,6 +13,7 @@ const (
 	identityMapUrl             = baseUrl + "identity.map"
 	identityResolveUrl         = baseUrl + "identity.resolve"
 	identityResolveWithTagsUrl = baseUrl + "identity.resolve?tags=true"
+	identityMapResolveUrl      = baseUrl + "identity.mapResolve"
 	identityDeleteUrl          = baseUrl + "identity.delete"
 	tagsCreateUrl              = baseUrl + "tags.create"
 	tagsGetUrl                 = baseUrl + "tags.get"
