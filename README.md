@@ -51,6 +51,7 @@ your integration.
     - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
         - `identity.map`
         - `identity.resolve`
+        - `identity.mapResolve`
         - `identity.delete`
     - [Tags](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
         - `tags.create`
@@ -61,11 +62,6 @@ your integration.
         - `audience.download`
 - _[Verification](https://platform.fullcontact.com/docs/apis/verification/introduction)_
     - `v2/verification/email`
-
-- _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
-    - `identity.map`
-    - `identity.resolve`
-    - `identity.delete`
 
 - _[Permission](https://platform.fullcontact.com/docs/apis/permission/introduction)_
     - `permission.create`
@@ -173,9 +169,9 @@ such as:
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
-- `ExpandedInterests`: _bool_
 - `VerifiedPhysical`: _bool_
 - `MaxMaids`: _int_
+- `PanoramaId`:_string_
 
 
 ```go
@@ -274,6 +270,7 @@ if resp.IsSuccessful {
 - `identity.map`
 - `identity.resolve`
 - `identity.delete`
+- `identity.mapResolve`
 #### Resolve Request
 Resolve uses `ResolveRequest` type for its request which supports
  __Multi Field Request:__ ability to match on __one or many__ input fields
@@ -281,7 +278,7 @@ Resolve uses `ResolveRequest` type for its request which supports
 You can build a Resolve Request by using `NewResolveRequest`
 and setting different input parameters that you have.
 
-Note: For `identity.map` any of `email`, `phone`, `profile`, `name & location` 
+Note: For `identity.map` and `identity.mapResolve` any of `email`, `phone`, `profile`, `name & location` 
 must be present.
  
 API can lookup and resolve individuals by sending any identifiers you may already have, 
@@ -312,6 +309,8 @@ such as:
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
+- `PanoramaId`:_string_
+- `GeneratePid`:_bool_
 
 ```go
 resolveRequest, err := fc.NewResolveRequest(
@@ -330,6 +329,12 @@ if resp.IsSuccessful {
 }
 resp = <-fcClient.IdentityResolve(resolveRequest)
 fmt.Printf("Identity Resolve API Response: %v", resp)
+if resp.IsSuccessful {
+    fmt.Printf("PersonIds Mapped: %v", resp.ResolveResponse.PersonIds)
+}
+
+resp = <-fcClient.IdentityMapResolve(resolveRequest)
+fmt.Printf("Identity Map Resolve API Response: %v", resp)
 if resp.IsSuccessful {
     fmt.Printf("PersonIds Mapped: %v", resp.ResolveResponse.PersonIds)
 }
@@ -502,6 +507,7 @@ All Permission Api requires `MultifieldRequest` requests, which can be construct
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
+- `PanoramaId`:_string_
 
 ```go
 multifieldRequest, err := fc.NewMultifieldRequest(
