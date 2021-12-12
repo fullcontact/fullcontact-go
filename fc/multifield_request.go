@@ -3,17 +3,18 @@ package fullcontact
 type MultifieldRequestOption func(ar *MultifieldRequest)
 
 type MultifieldRequest struct {
-	Emails     			[]string    		`json:"emails,omitempty"`
-	Phones     			[]string    		`json:"phones,omitempty"`
-	Maids      			[]string    		`json:"maids,omitempty"`
-	Location   			*Location   		`json:"location,omitempty"`
-	Name       			*PersonName 		`json:"name,omitempty"`
-	Profiles   			[]*Profile  		`json:"profiles,omitempty"`
-	PersonId    		string      		`json:"personId,omitempty"`
-	RecordId    		string      		`json:"recordId,omitempty"`
-	PartnerId    		string      		`json:"partnerId,omitempty"`
-	LiNonId    			string      		`json:"li_nonid,omitempty"`
-	Placekey    		string      		`json:"placekey,omitempty"`
+	Emails     []string    `json:"emails,omitempty"`
+	Phones     []string    `json:"phones,omitempty"`
+	Maids      []string    `json:"maids,omitempty"`
+	Location   *Location   `json:"location,omitempty"`
+	Name       *PersonName `json:"name,omitempty"`
+	Profiles   []*Profile  `json:"profiles,omitempty"`
+	PersonId   string      `json:"personId,omitempty"`
+	RecordId   string      `json:"recordId,omitempty"`
+	PartnerId  string      `json:"partnerId,omitempty"`
+	LiNonId    string      `json:"li_nonid,omitempty"`
+	Placekey   string      `json:"placekey,omitempty"`
+	PanoramaId string      `json:"panoramaId,omitempty"`
 }
 
 func NewMultifieldRequest(option ...MultifieldRequestOption) (*MultifieldRequest, error) {
@@ -168,5 +169,11 @@ func WithPartnerIdForMultifieldRequest(partnerId string) MultifieldRequestOption
 func WithPlacekeyForMultifieldRequest(placekey string) MultifieldRequestOption {
 	return func(multifieldRequest *MultifieldRequest) {
 		multifieldRequest.Placekey = placekey
+	}
+}
+
+func WithPanoramaIdForMultifieldRequest(panoramaId string) MultifieldRequestOption {
+	return func(multifieldRequest *MultifieldRequest) {
+		multifieldRequest.PanoramaId = panoramaId
 	}
 }
