@@ -34,6 +34,20 @@ func TestIdentityResolve(t *testing.T) {
 	assert.Equal(t, "VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345", response.PersonIds[0])
 }
 
+func TestIdentityMapResolve(t *testing.T) {
+	ch := make(chan *APIResponse)
+	respJson := "{\"recordIds\":[\"customer123\"],\"personIds\":[\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\"]}"
+	fcTestClient, testServer := getTestServerAndClient(identityMapResolveUrl, respJson, 200)
+	defer testServer.Close()
+	go fcTestClient.do(testServer.URL, nil, ch)
+	resp := <-ch
+	response := resp.ResolveResponse
+	assert.True(t, resp.IsSuccessful)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "customer123", response.RecordIds[0])
+	assert.Equal(t, "VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345", response.PersonIds[0])
+}
+
 func TestIdentityDelete(t *testing.T) {
 	ch := make(chan *APIResponse)
 	fcTestClient, testServer := getTestServerAndClient(identityDeleteUrl, "", 204)

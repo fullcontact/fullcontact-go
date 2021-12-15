@@ -1,7 +1,7 @@
 package fullcontact
 
 const (
-	version                    = "1.2.0"
+	version                    = "1.3.0"
 	userAgent                  = "FullContact_Go_Client_V" + version
 	FcApiKey                   = "FC_API_KEY"
 	FCGoClientTestType         = "FCGoClientTestType"
@@ -13,6 +13,7 @@ const (
 	identityMapUrl             = baseUrl + "identity.map"
 	identityResolveUrl         = baseUrl + "identity.resolve"
 	identityResolveWithTagsUrl = baseUrl + "identity.resolve?tags=true"
+	identityMapResolveUrl      = baseUrl + "identity.mapResolve"
 	identityDeleteUrl          = baseUrl + "identity.delete"
 	tagsCreateUrl              = baseUrl + "tags.create"
 	tagsGetUrl                 = baseUrl + "tags.get"

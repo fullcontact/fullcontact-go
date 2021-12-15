@@ -124,7 +124,7 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setCompanyResponse(apiResponse)
 		case companySearchUrl:
 			setCompanySearchResponse(apiResponse)
-		case identityMapUrl, identityResolveUrl, identityDeleteUrl:
+		case identityMapUrl, identityResolveUrl, identityMapResolveUrl, identityDeleteUrl:
 			setResolveResponse(apiResponse)
 		case identityResolveWithTagsUrl:
 			setResolveResponseWithTags(apiResponse)
@@ -255,6 +255,23 @@ func (fcClient *fullContactClient) IdentityResolve(resolveRequest *ResolveReques
 		return ch
 	}
 	return fcClient.resolveRequest(ch, resolveRequest, identityResolveUrl)
+}
+
+/* Resolve
+FullContact Resolve API - IdentityMapResolve, takes an ResolveRequest and returns a channel of type APIResponse.
+Request is converted to JSON and sends a Asynchronous request */
+func (fcClient *fullContactClient) IdentityMapResolve(resolveRequest *ResolveRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if resolveRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("Resolve Request can't be nil"))
+		return ch
+	}
+	err := validateForIdentityMap(resolveRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	return fcClient.resolveRequest(ch, resolveRequest, identityMapResolveUrl)
 }
 
 /* Resolve

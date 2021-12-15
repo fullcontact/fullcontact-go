@@ -12,7 +12,7 @@ func TestMarshallNewResolveRequest(t *testing.T) {
 	assert.NoError(t, err)
 	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
 	assert.NoError(t, err)
-	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}],\"recordId\":\"customer123\",\"personId\":\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\"}"
+	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}],\"recordId\":\"customer123\",\"personId\":\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\",\"panoramaId\":\"panoramaId\",\"generatePid\":true}"
 	pr, err := NewResolveRequest(
 		WithNameForResolve(&PersonName{Full: "Marian C Reed"}),
 		WithEmailForResolve("marianrd97@outlook.com"),
@@ -30,7 +30,10 @@ func TestMarshallNewResolveRequest(t *testing.T) {
 		WithMaidForResolve("abcd-123-abcd-1234-abcdlkjhasdfgh"),
 		WithMaidForResolve("1234-snbk-lkldiemvmruixp-2kdp-vdm"),
 		WithRecordIdForResolve("customer123"),
-		WithPersonIdForResolve("VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345"))
+		WithPersonIdForResolve("VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345"),
+		WithPanoramaIDForResolve("panoramaId"),
+		WithGeneratePidForResolve(true),
+	)
 	assert.NoError(t, err)
 	reqBytes, err := json.Marshal(pr)
 	assert.NoError(t, err)
