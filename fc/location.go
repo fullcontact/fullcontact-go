@@ -13,7 +13,7 @@ type Location struct {
 	Formatted    string `json:"formatted,omitempty"`
 	PostalCode   string `json:"postalCode,omitempty"`
 	Type         string `json:"type,omitempty"`
-	Label        string `json:"type,omitempty"`
+	Label        string `json:"label,omitempty"`
 }
 
 func NewLocation(options ...LocationOption) *Location {
