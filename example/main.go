@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	fc "github.com/fullcontact/fullcontact-go/fc"
 	"log"
+
+	fc "github.com/fullcontact/fullcontact-go/fc"
 )
 
 type CustomRetryHandler struct{}
@@ -133,7 +134,7 @@ func main() {
 	}
 
 	//Identity Map Resolve
-	resolveRequest, err := fc.NewResolveRequest(
+	resolveRequest, err = fc.NewResolveRequest(
 		fc.WithRecordIdForResolve("r1"),
 		fc.WithEmailForResolve("bart@fullcontct.com"),
 		fc.WithGeneratePidForResolve(true))
