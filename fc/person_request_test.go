@@ -2,8 +2,9 @@ package fullcontact
 
 import (
 	"encoding/json"
-	assert "github.com/stretchr/testify/require"
 	"testing"
+
+	assert "github.com/stretchr/testify/require"
 )
 
 func TestMarshallNewPersonRequest(t *testing.T) {
@@ -12,7 +13,7 @@ func TestMarshallNewPersonRequest(t *testing.T) {
 	assert.NoError(t, err)
 	profile2, err := NewProfile(WithUrl("https://twitter.com/mcreedytest"))
 	assert.NoError(t, err)
-	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"dataFilter\":[\"individual\",\"social\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}],\"webhookUrl\":\"http://www.fullcontact.com/hook\",\"recordId\":\"customer123\",\"personId\":\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\",\"confidence\":\"HIGH\",\"verifiedPhysical\":true,\"maxMaids\":5,\"panoramaId\":\"panoramaId\"}"
+	requestJson := "{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"dataFilter\":[\"individual\",\"social\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}],\"webhookUrl\":\"http://www.fullcontact.com/hook\",\"recordId\":\"customer123\",\"personId\":\"VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345\",\"confidence\":\"HIGH\",\"maxMaids\":5,\"panoramaId\":\"panoramaId\"}"
 	pr, err := NewPersonRequest(
 		WithName(NewPersonName(WithFull("Marian C Reed"), WithFamily("Reed"), WithGiven("Marian"))),
 		WithEmail("marianrd97@outlook.com"),
@@ -36,7 +37,6 @@ func TestMarshallNewPersonRequest(t *testing.T) {
 		WithWebhookUrl("http://www.fullcontact.com/hook"),
 		WithRecordId("customer123"),
 		WithPersonId("VS1OPPPPvxHcCNPezUbvYBCDEAOdSj5AI0adsA2bLmh12345"),
-		WithVerifiedPhysical(true),
 		WithMaxMaids(5),
 		WithPanoramaID("panoramaId"),
 	)

@@ -81,18 +81,6 @@ func main() {
 		fmt.Printf("Company Name: %v", resp.CompanyResponse.Name)
 	}
 
-	//Company Search
-	companySearchRequest, err := fc.NewCompanyRequest(fc.WithCompanyName("FullContact"))
-	if err != nil {
-		log.Fatalln(err)
-		return
-	}
-	resp = <-fcClient.CompanySearch(companySearchRequest)
-	fmt.Printf("\n\nCompany Search API Response: %v", resp)
-	if resp.IsSuccessful {
-		fmt.Printf("Company Lookup Domain: %v", resp.CompanySearchResponse[0].LookupDomain)
-	}
-
 	//Resolve
 	//Identity Map
 	resolveRequest, err := fc.NewResolveRequest(
@@ -199,13 +187,6 @@ func main() {
 	fmt.Printf("\n\nAudience Download API Response: %v", resp.AudienceResponse)
 	if resp.IsSuccessful {
 		fmt.Println(resp.AudienceResponse.WriteAudienceBytesToFile(requestId + "_audienceFile.json.gz"))
-	}
-
-	//Email Verification
-	resp = <-fcClient.EmailVerification("bart@fullcontact.com")
-	fmt.Printf("\n\nEmail Verification API Response: %v", resp)
-	if resp.IsSuccessful {
-		fmt.Println(resp.EmailVerificationResponse)
 	}
 
 	//Permission

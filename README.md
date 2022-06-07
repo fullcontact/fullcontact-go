@@ -45,7 +45,6 @@ your integration.
 - _[Enrich](https://platform.fullcontact.com/docs/apis/enrich/introduction)_
     - `person.enrich`
     - `company.enrich`
-    - `company.search`
 
 - Private Identity Cloud
     - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
@@ -60,8 +59,6 @@ your integration.
     - [Audience](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
         - `audience.create`
         - `audience.download`
-- _[Verification](https://platform.fullcontact.com/docs/apis/verification/introduction)_
-    - `v2/verification/email`
 
 - _[Permission](https://platform.fullcontact.com/docs/apis/permission/introduction)_
     - `permission.create`
@@ -131,7 +128,6 @@ fcClient, err := fc.NewFullContactClient(
 [Enrich API Reference](https://platform.fullcontact.com/docs/apis/enrich/introduction)
 - `person.enrich`
 - `company.enrich`
-- `company.search`
 #### Making a Person Enrich Request
 Our V3 Person Enrich supports __Multi Field Request:__ ability to match on __one or many__ input fields
 
@@ -169,7 +165,6 @@ such as:
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
-- `VerifiedPhysical`: _bool_
 - `MaxMaids`: _int_
 - `PanoramaId`:_string_
 
@@ -215,11 +210,8 @@ if resp.IsSuccessful == true {
 ```
 
 #### Company Enrich Request and Response
-To Enrich Company data FullContact library provides two methods __Lookup by Company Domain__ or
-__Search by Company Name__. More data is available through the Lookup by Company Domain, 
-but if the domain is unknown, use our Search by Company Name API to find the list of domains 
-that could be related to the Company you are looking for and then call the Lookup by 
-Company Domain with that domain to get the full information about the company.
+To Enrich Company data FullContact library provides the method __Lookup by Company Domain__. 
+All available details of the company is available through the Lookup by Company Domain.
 
 ##### Lookup by Company Domain
 - Request:
@@ -236,32 +228,6 @@ resp := <-fcClient.CompanyEnrich(companyEnrichRequest)
 fmt.Printf("Company Enrich API Response: %v", resp)
 if resp.IsSuccessful {
     fmt.Printf("Company Name: %v", resp.CompanyResponse.Name)
-}
-```
-
-##### Search by Company Name
-- Request:
-    - Parameters:
-        - `companyName`
-        - `webhookUrl` 
-        - `location`
-        - `locality` 
-        - `region`
-        - `country`
-        - `sort`
-```go
-companySearchRequest, err := fc.NewCompanyRequest(fc.WithCompanyName("FullContact"))
-if err != nil {
-    log.Fatalln(err)
-    return
-}
-```
-- Response: It returns an array of `CompanySearchResponse`.
-```go
-resp := <-fcClient.CompanySearch(companySearchRequest)
-fmt.Printf("Company Search API Response: %v", resp)
-if resp.IsSuccessful {
-    fmt.Printf("Company Lookup Domain: %v", resp.CompanySearchResponse[0].LookupDomain)
 }
 ```
 
@@ -441,20 +407,6 @@ resp := <-fcClient.AudienceDownload(requestId)
 fmt.Printf("\n\nAudience Download API Response: %v", resp.AudienceResponse)
 if resp.IsSuccessful {
     resp.AudienceResponse.WriteAudienceBytesToFile(requestId + "_audienceFile.json.gz")
-}
-```
-
-## Verification
-[EmailVerification API Reference](https://platform.fullcontact.com/docs/apis/verification/introduction)
-- `v2/verification/email`
-
-FullContact Email Verification API accepts single `email` request, as a `string`. Requests are sent 
-using HTTP GET and request email is set as a query parameter.
-```go
-resp := <-fcClient.EmailVerification("bart@fullcontact.com")
-fmt.Printf("\n\nEmail Verification API Response: %v", resp)
-if resp.IsSuccessful {
-    fmt.Println(resp.EmailVerificationResponse)
 }
 ```
 

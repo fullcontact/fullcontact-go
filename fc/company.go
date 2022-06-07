@@ -17,24 +17,6 @@ type CompanyResponse struct {
 	Details    *CompanyDetails `json:"details"`
 }
 
-type CompanySearchResponse struct {
-	LookupDomain string                `json:"lookupDomain"`
-	OrgName      string                `json:"orgName"`
-	Logo         string                `json:"logo"`
-	Location     CompanySearchLocation `json:"location"`
-}
-
-type CompanySearchLocation struct {
-	Locality string        `json:"locality"`
-	Region   CompanyRegion `json:"region"`
-	Country  CompanyRegion `json:"country"`
-}
-
-type CompanyRegion struct {
-	Name string `json:"name"`
-	Code string `json:"code"`
-}
-
 type DataAddOns struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`

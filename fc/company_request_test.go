@@ -2,8 +2,9 @@ package fullcontact
 
 import (
 	"encoding/json"
-	assert "github.com/stretchr/testify/require"
 	"testing"
+
+	assert "github.com/stretchr/testify/require"
 )
 
 func TestNewCompanyRequestForEnrich(t *testing.T) {
@@ -51,14 +52,6 @@ func TestNilCompanyEnrichRequest(t *testing.T) {
 	assert.EqualError(t, resp.Err, "FullContactError: Company Request can't be nil")
 }
 
-func TestNilCompanySearchRequest(t *testing.T) {
-	fcTestClient := fullContactClient{}
-	ch := fcTestClient.CompanySearch(nil)
-	resp := <-ch
-	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Company Request can't be nil")
-}
-
 func TestInvalidCompanyEnrichRequest(t *testing.T) {
 	fcTestClient := fullContactClient{}
 	cr, err := NewCompanyRequest(WithCompanyName("Fullcontact"))
@@ -66,13 +59,4 @@ func TestInvalidCompanyEnrichRequest(t *testing.T) {
 	resp := <-fcTestClient.CompanyEnrich(cr)
 	assert.False(t, resp.IsSuccessful)
 	assert.EqualError(t, resp.Err, "FullContactError: Company Domain is mandatory for Company Enrich")
-}
-
-func TestInvalidCompanySearchRequest(t *testing.T) {
-	fcTestClient := fullContactClient{}
-	cr, err := NewCompanyRequest(WithCountry("US"))
-	assert.NoError(t, err)
-	resp := <-fcTestClient.CompanySearch(cr)
-	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Company Name is mandatory for Company Search")
 }

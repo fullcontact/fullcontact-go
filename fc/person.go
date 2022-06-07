@@ -3,23 +3,22 @@ package fullcontact
 /* This contains all the Person centric response models for the Person Enrich API */
 
 type PersonResp struct {
-	FullName         string            `json:"fullName"`
-	Email            string            `json:"email"`
-	Phone            string            `json:"phone"`
-	AgeRange         string            `json:"ageRange"`
-	Gender           string            `json:"gender"`
-	Location         string            `json:"location"`
-	Title            string            `json:"title"`
-	Organization     string            `json:"organization"`
-	Twitter          string            `json:"twitter"`
-	Linkedin         string            `json:"linkedin"`
-	Bio              string            `json:"bio"`
-	Avatar           string            `json:"avatar"`
-	Website          string            `json:"website"`
-	Details          *Details          `json:"details"`
-	Epsilon          map[string]string `json:"epsilon"`
-	VerifiedPhysical bool              `json:"verifiedPhysical"`
-	Updated          string            `json:"updated"`
+	FullName     string            `json:"fullName"`
+	Email        string            `json:"email"`
+	Phone        string            `json:"phone"`
+	AgeRange     string            `json:"ageRange"`
+	Gender       string            `json:"gender"`
+	Location     string            `json:"location"`
+	Title        string            `json:"title"`
+	Organization string            `json:"organization"`
+	Twitter      string            `json:"twitter"`
+	Linkedin     string            `json:"linkedin"`
+	Bio          string            `json:"bio"`
+	Avatar       string            `json:"avatar"`
+	Website      string            `json:"website"`
+	Details      *Details          `json:"details"`
+	Epsilon      map[string]string `json:"epsilon"`
+	Updated      string            `json:"updated"`
 }
 
 type Details struct {

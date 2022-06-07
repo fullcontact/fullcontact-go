@@ -8,6 +8,30 @@ import (
 	"time"
 )
 
+func (fcClient *fullContactClient) newHttpRequest1(url string, reqBytes []byte) (*http.Request, error) {
+	var method string
+	var buffer *bytes.Buffer
+
+	if isHttpGet(url) {
+		method = "GET"
+		url = url + "?" + string(reqBytes)
+		buffer = nil
+	} else {
+		method = "POST"
+		buffer = bytes.NewBuffer(reqBytes)
+	}
+
+	req, err := http.NewRequest(method, url, buffer)
+	if err != nil {
+		return nil, err
+	}
+	req = fcClient.addHeaders(req)
+	return req, nil
+
+}
+
+// TODO: replace the get and post request creators with a single request creator
+// abstracting those details frm the caller
 func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (*http.Request, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBytes))
 	if err != nil {
@@ -40,7 +64,7 @@ func (fcClient *fullContactClient) addHeaders(req *http.Request) *http.Request {
 
 func isHttpGet(url string) bool {
 	// Add urls to below list for HTTP GET request
-	getUrlList := []string{emailVerificationUrl, audienceDownloadUrl}
+	getUrlList := []string{audienceDownloadUrl}
 
 	for _, getUrl := range getUrlList {
 		if url == getUrl {
@@ -122,16 +146,12 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setPersonResponse(apiResponse)
 		case companyEnrichUrl:
 			setCompanyResponse(apiResponse)
-		case companySearchUrl:
-			setCompanySearchResponse(apiResponse)
 		case identityMapUrl, identityResolveUrl, identityMapResolveUrl, identityDeleteUrl:
 			setResolveResponse(apiResponse)
 		case identityResolveWithTagsUrl:
 			setResolveResponseWithTags(apiResponse)
 		case tagsCreateUrl, tagsGetUrl, tagsDeleteUrl:
 			setTagsResponse(apiResponse)
-		case emailVerificationUrl:
-			setEmailVerificationResponse(apiResponse)
 		case audienceCreateUrl, audienceDownloadUrl:
 			setAudienceResponse(apiResponse)
 		case permissionCreateUrl:
@@ -196,30 +216,6 @@ func (fcClient *fullContactClient) CompanyEnrich(companyRequest *CompanyRequest)
 	}
 	// Send Asynchronous Request in Goroutine
 	go fcClient.do(companyEnrichUrl, reqBytes, ch)
-	return ch
-}
-
-/* FullContact V3 Company Search API, takes an CompanyRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
-func (fcClient *fullContactClient) CompanySearch(companyRequest *CompanyRequest) chan *APIResponse {
-	ch := make(chan *APIResponse)
-	if companyRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Company Request can't be nil"))
-		return ch
-	}
-	err := validateForCompanySearch(companyRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	reqBytes, err := json.Marshal(companyRequest)
-
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	// Send Asynchronous Request in Goroutine
-	go fcClient.do(companySearchUrl, reqBytes, ch)
 	return ch
 }
 
@@ -406,21 +402,6 @@ func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIR
 	return ch
 }
 
-/* FullContact Email Verification API, takes an 'email' as string and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
-func (fcClient *fullContactClient) EmailVerification(email string) chan *APIResponse {
-	ch := make(chan *APIResponse)
-	if !isPopulated(email) {
-		go sendToChannel(ch, nil, "", NewFullContactError("email can't be nil"))
-		return ch
-	}
-	reqBytes := []byte("email=" + email)
-
-	// Send Asynchronous Request in Goroutine
-	go fcClient.do(emailVerificationUrl, reqBytes, ch)
-	return ch
-}
-
 /* Permission
 FullContact Permission API - PermissionCreate, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
@@ -584,27 +565,6 @@ func setCompanyResponse(apiResponse *APIResponse) {
 	apiResponse.CompanyResponse = &companyResponse
 }
 
-func setCompanySearchResponse(apiResponse *APIResponse) {
-	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
-	defer apiResponse.RawHttpResponse.Body.Close()
-	if err != nil {
-		apiResponse.Err = err
-		return
-	}
-	var companySearchResponse []*CompanySearchResponse
-	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &companySearchResponse)
-		if err != nil {
-			apiResponse.Err = err
-			return
-		}
-	}
-	apiResponse.Status = apiResponse.RawHttpResponse.Status
-	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
-	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
-	apiResponse.CompanySearchResponse = companySearchResponse
-}
-
 func setResolveResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
@@ -692,27 +652,6 @@ func setAudienceResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
 	apiResponse.AudienceResponse = &audienceResponse
-}
-
-func setEmailVerificationResponse(apiResponse *APIResponse) {
-	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
-	defer apiResponse.RawHttpResponse.Body.Close()
-	if err != nil {
-		apiResponse.Err = err
-		return
-	}
-	var emailResponse EmailVerificationResponse
-	if isPopulated(string(bodyBytes)) {
-		err = json.Unmarshal(bodyBytes, &emailResponse)
-		if err != nil {
-			apiResponse.Err = err
-			return
-		}
-	}
-	apiResponse.Status = apiResponse.RawHttpResponse.Status
-	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
-	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
-	apiResponse.EmailVerificationResponse = &emailResponse
 }
 
 func setPermissionCreateResponse(apiResponse *APIResponse) {
