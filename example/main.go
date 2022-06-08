@@ -262,13 +262,13 @@ func main() {
 		fmt.Printf("Verify Signals API Response: %v", resp)
 	}
 
-	// Verify Signals
+	// Verify Match
 	resp = <-fcClient.VerifyMatch(multifieldRequest)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Verify Match API Response: %v", resp)
 	}
 
-	// Verify Signals
+	// Verify Activity
 	resp = <-fcClient.VerifyActivity(multifieldRequest)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Verify Activity API Response: %v", resp)

@@ -639,6 +639,16 @@ class: `VerifyActivityResponse`. A basic API response with response code as 200 
 
 The `Message` field will contain the error message if the individual cannot be verified. If person can be identified then, the `Emails` field will contain the verify score.
 
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+        
+    resp = <-fcClient.VerifyActivity(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Activity API Response: %v", resp)
+	}
+```
+
 ### Verify Match
 #### Parameters:
 Query takes a `MultifieldRequest`
@@ -658,6 +668,16 @@ class: `VerifyMatchResponse`. A basic API response with response code as 200 if 
 - `Maid`: _bool_
 - `Social`: _bool_
 - `NonId`: _bool_
+
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+
+    resp = <-fcClient.VerifyMatch(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Match API Response: %v", resp)
+	}
+```
 
 ### Verify Signals
 #### Parameters:
@@ -722,3 +742,13 @@ class: `VerifySignalsResponse`. A basic API response with response code as 200 i
     - `Company` : _string_
     - `Title` : _string_
 - `Message`: _string_
+
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+
+    resp = <-fcClient.VerifySignals(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Signals API Response: %v", resp)
+	}
+```
