@@ -164,6 +164,12 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 			setPermissionCurrentResponse(apiResponse)
 		case permissionVerifyUrl:
 			setPermissionVerifyResponse(apiResponse)
+		case verifySignalsUrl:
+			setVerfiySignalsResponse(apiResponse)
+		case verifyMatchUrl:
+			setVerfiyMatchResponse(apiResponse)
+		case verifyActivityUrl:
+			setVerfiyActivityResponse(apiResponse)
 		}
 	}
 	ch <- apiResponse
@@ -523,6 +529,84 @@ func (fcClient *fullContactClient) PermissionVerify(permissionRequest *Permissio
 	return ch
 }
 
+/*
+FullContact Verify API - VerfiySignals, takes a MultiFieldRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends an Asynchronous request.
+Response will be avaiable in the VerifySignalsResponse field of APIResponse
+*/
+func (fcClient *fullContactClient) VerifySignals(multifieldRequest *MultifieldRequest) chan *APIResponse {
+	// ch := make(chan *APIResponse)
+	// if multifieldRequest == nil {
+	// 	go sendToChannel(ch, nil, "", NewFullContactError("MultiFieldRequest can't be nil"))
+	// 	return ch
+	// }
+
+	// err := multifieldRequest.validate()
+	// if err != nil {
+	// 	go sendToChannel(ch, nil, "", err)
+	// 	return ch
+	// }
+
+	// reqBytes, err := json.Marshal(multifieldRequest)
+	// if err != nil {
+	// 	go sendToChannel(ch, nil, "", err)
+	// 	return ch
+	// }
+	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	go fcClient.do(verifySignalsUrl, reqBytes, ch)
+	return ch
+}
+
+/*
+FullContact Verify API - VerfiyMatch, takes a MultiFieldRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends an Asynchronous request.
+Response will be avaiable in the VerifyMatchResponse field of APIResponse
+*/
+func (fcClient *fullContactClient) VerifyMatch(multifieldRequest *MultifieldRequest) chan *APIResponse {
+	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	go fcClient.do(verifyMatchUrl, reqBytes, ch)
+	return ch
+}
+
+/*
+FullContact Verify API - VerfiyActivity, takes a MultiFieldRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends an Asynchronous request.
+Response will be avaiable in the VerifyActivityResponse field of APIResponse
+*/
+func (fcClient *fullContactClient) VerifyActivity(multifieldRequest *MultifieldRequest) chan *APIResponse {
+	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	go fcClient.do(verifyActivityUrl, reqBytes, ch)
+	return ch
+}
+
+func doVerfiyAPIPrerequisites(multifieldRequest *MultifieldRequest) (chan *APIResponse, []byte, error) {
+	ch := make(chan *APIResponse)
+	if multifieldRequest == nil {
+		return ch, nil, NewFullContactError("MultiFieldRequest can't be nil")
+	}
+	err := multifieldRequest.validate()
+	if err != nil {
+		return ch, nil, err
+	}
+	reqBytes, err := json.Marshal(multifieldRequest)
+	return ch, reqBytes, err
+}
+
 func setPersonResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
@@ -739,6 +823,69 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
 	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
 	apiResponse.PermissionCurrentResponse = response
+}
+
+func setVerfiySignalsResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var response VerifySignalsResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &response)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.VerifySignalsResponse = &response
+}
+
+func setVerfiyMatchResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var response VerifyMatchResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &response)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.VerifyMatchResponse = &response
+}
+
+func setVerfiyActivityResponse(apiResponse *APIResponse) {
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	defer apiResponse.RawHttpResponse.Body.Close()
+	if err != nil {
+		apiResponse.Err = err
+		return
+	}
+	var response VerifyActivityResponse
+	if isPopulated(string(bodyBytes)) {
+		err = json.Unmarshal(bodyBytes, &response)
+		if err != nil {
+			apiResponse.Err = err
+			return
+		}
+	}
+	apiResponse.Status = apiResponse.RawHttpResponse.Status
+	apiResponse.StatusCode = apiResponse.RawHttpResponse.StatusCode
+	apiResponse.IsSuccessful = (apiResponse.StatusCode == 200) || (apiResponse.StatusCode == 202) || (apiResponse.StatusCode == 404)
+	apiResponse.VerifyActivityResponse = &response
 }
 
 func min(x, y int) int {

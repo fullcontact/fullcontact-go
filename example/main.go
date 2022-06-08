@@ -191,7 +191,6 @@ func main() {
 
 	//Permission
 	//Permission Create
-
 	multifieldRequest, err := fc.NewMultifieldRequest(
 		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
 

@@ -23,4 +23,7 @@ const (
 	permissionFindUrl          = baseUrl + "permission.find"
 	permissionCurrentUrl       = baseUrl + "permission.current"
 	permissionVerifyUrl        = baseUrl + "permission.verify"
+	verifySignalsUrl           = baseUrl + "verify.signals"
+	verifyMatchUrl             = baseUrl + "verify.match"
+	verifyActivityUrl          = baseUrl + "verify.activity"
 )
