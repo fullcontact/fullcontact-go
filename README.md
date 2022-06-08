@@ -67,6 +67,10 @@ your integration.
     - `permission.current`
     - `permission.verify`
 
+- _[Verify](https://docs.fullcontact.com/docs/verify-overview)_
+    - `verify.activity`
+    - `verify.match`
+    - `verify.signals`
 ## Providing Authentication to FullContact Client
 FullContact client uses ```CredentialsProvider``` interface for Authentication. Different ways 
 to provide authentication:
@@ -518,21 +522,21 @@ class: `PermissionVerifyResponse` with following fields.
 
 ### Permission Delete
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionDeleteResponse`. A basic API response with response code as 202 if successful.
 
 ### Permission Find
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionFindResponse` with list of Permissions.
 
 ### Permission Current
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionCurrentResponse` with set of current permissions
@@ -567,3 +571,154 @@ if resp.IsSuccessful {
     fmt.Printf("Permission Current: %v", resp.PermissionCurrentResponse)
 }
 ```
+
+## Verify
+[Verify API Reference](hhttps://docs.fullcontact.com/reference/activity)
+- `verify.activity`
+- `verify.match`
+- `verify.signals`
+
+### Verify Request
+Verify accepts a `MultifieldRequest` as its input for
+
+- `verify.activity`
+- `verify.match`
+- `verify.signals`
+
+All Verify APIs requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
+
+- `Emails`: _[]string_
+- `Phones`: _[]string_
+- `Location`: _*Location_
+    - `AddressLine1`: _string_
+    - `AddressLine2`: _string_
+    - `City`: _string_
+    - `Region`: _string_
+    - `RegionCode`: _string_
+    - `PostalCode`: _string_
+- `Name`: _*PersonName_
+    - `Full`: _string_
+    - `Given`: _string_
+    - `Family`: _string_
+- `Profiles`: _[]*Profile_
+    - `Service`: _string_
+    - `Username`: _string_
+    - `Userid`: _string_
+    - `Url`: _string_
+- `Maids`: _[]string_
+- `RecordId`: _string_
+- `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
+- `Placekey`: _string_
+- `PanoramaId`:_string_
+
+```go
+multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+```
+
+All verify api methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
+
+The following are the corresponding response classes
+- `VerifyActivityResponse` - verify.activity
+- `VerifyMatchResponse` - verify.match
+- `VerifySignalsResponse` - verify.signals
+
+All the apis requires `MultifieldRequest` as request parameter
+
+### Verify Activity
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifyActivityResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `Emails`: _float64_
+- `Message`: _string_
+
+The `Message` field will contain the error message if the individual cannot be verified. If person can be identified then, the `Emails` field will contain the verify score.
+
+### Verify Match
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifyMatchResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `City`: _bool_
+- `Region`: _bool_
+- `Country`: _bool_
+- `Continent`: _bool_
+- `PostalCode`: _bool_
+- `FamilyName`: _bool_
+- `GivenName`: _bool_
+- `Phone`: _bool_
+- `Email`: _bool_
+- `Maid`: _bool_
+- `Social`: _bool_
+- `NonId`: _bool_
+
+### Verify Signals
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifySignalsResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `Emails`: _[]VerifiedEmail_
+    - `Md5` : _string_
+    - `Sha1` : _string_
+    - `Sha256` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `PersonIds`: _[]string_
+- `Phones`: _[]VerifiedPhone_
+    - `Label`: _string_
+    - `Type`: _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `Maids`: _[]VerifiedIdentifier_
+    - `Id` : _string_
+    - `Type` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `Name`: _VerifiedName_
+    - `GivenName` : _string_
+    - `FamilyName` : _string_
+- `PanoIds`: _[]PanoIds_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `NonIds`: _[]NonIds_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `IpAddresses`: _[]IpAddresses_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Confidence` : _float64_
+- `SocialProfiles`: _VerifiedSocialProfile_
+    - `TwitterUrl` : _string_
+    - `LinkedInUrl` : _string_
+- `Demographics`: _VerifiedDemographics_
+    - `Age` : _int_
+    - `AgeRange` : _string_
+    - `Gender` : _string_
+    - `LocationFormatted` : _string_
+- `Employment`: _VerifiedEmployment_
+    - `Current` : _bool_
+    - `Company` : _string_
+    - `Title` : _string_
+- `Message`: _string_
