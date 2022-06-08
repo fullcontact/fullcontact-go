@@ -254,4 +254,23 @@ func main() {
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Delete API Response: %v", resp)
 	}
+
+	// Verify API Samples
+	// Verify Signals
+	resp = <-fcClient.VerifySignals(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Signals API Response: %v", resp)
+	}
+
+	// Verify Signals
+	resp = <-fcClient.VerifyMatch(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Match API Response: %v", resp)
+	}
+
+	// Verify Signals
+	resp = <-fcClient.VerifyActivity(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Activity API Response: %v", resp)
+	}
 }
