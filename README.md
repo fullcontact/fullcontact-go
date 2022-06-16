@@ -42,12 +42,12 @@ Once you’re on board with the API behavior, FullContact Client library should 
 your integration.
 
 ### Supported APIs
-- _[Enrich](https://platform.fullcontact.com/docs/apis/enrich/introduction)_
+- _[Enrich](https://docs.fullcontact.com/docs/enrich-overview)_
     - `person.enrich`
     - `company.enrich`
 
 - Private Identity Cloud
-    - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
+    - _[Resolve](https://docs.fullcontact.com/docs/resolve-overview)_
         - `identity.map`
         - `identity.resolve`
         - `identity.mapResolve`
@@ -60,7 +60,7 @@ your integration.
         - `audience.create`
         - `audience.download`
 
-- _[Permission](https://platform.fullcontact.com/docs/apis/permission/introduction)_
+- _[Permission](https://docs.fullcontact.com/docs/permission-overview)_
     - `permission.create`
     - `permission.delete`
     - `permission.find`
