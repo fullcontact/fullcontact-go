@@ -5,19 +5,19 @@ package fullcontact
 type PermissionRequestOption func(ar *PermissionRequest)
 
 type PermissionRequest struct {
-	Timestamp  			int							`json:"timestamp,omitempty"`
-	Query    			*MultifieldRequest			`json:"query,omitempty"`
-	ConsentPurposes		[]*ConsentPurpose 			`json:"consentPurposes,omitempty"`
-	Locale     			string      				`json:"locale,omitempty"`
-	IpAddress			string						`json:"ipAddress,omitempty"`
-	Language     		string      				`json:"language,omitempty"`
-	CollectionMethod	string						`json:"collectionMethod,omitempty"`
-	CollectionLocation 	string      				`json:"collectionLocation,omitempty"`
-	Tcf					string						`json:"tcf,omitempty"`
-	PolicyUrl     		string      				`json:"policyUrl,omitempty"`
-	TermsService		string						`json:"termsService,omitempty"`
-	PurposeId			int							`json:"purposeId,omitempty"`
-	Channel				string						`json:"channel,omitempty"`
+	Timestamp          int                `json:"timestamp,omitempty"`
+	Query              *MultifieldRequest `json:"query,omitempty"`
+	ConsentPurposes    []*ConsentPurpose  `json:"consentPurposes,omitempty"`
+	Locale             string             `json:"locale,omitempty"`
+	IpAddress          string             `json:"ipAddress,omitempty"`
+	Language           string             `json:"language,omitempty"`
+	CollectionMethod   string             `json:"collectionMethod,omitempty"`
+	CollectionLocation string             `json:"collectionLocation,omitempty"`
+	Tcf                string             `json:"tcf,omitempty"`
+	PolicyUrl          string             `json:"policyUrl,omitempty"`
+	TermsService       string             `json:"termsService,omitempty"`
+	PurposeId          int                `json:"purposeId,omitempty"`
+	Channel            string             `json:"channel,omitempty"`
 }
 
 func NewPermissionRequest(option ...PermissionRequestOption) (*PermissionRequest, error) {
@@ -58,28 +58,13 @@ func validateForPermissionCreate(request *PermissionRequest) error {
 	if err != nil {
 		return err
 	}
-	for _, consentPurpose := range request.ConsentPurposes{
+	for _, consentPurpose := range request.ConsentPurposes {
 		err = validateConsentPurpose(consentPurpose)
 		if err != nil {
 			return err
 		}
 	}
 	err = request.Query.validate()
-	return err
-}
-
-func validateForPermissionDelete(request *MultifieldRequest) error {
-	err := request.validate()
-	return err
-}
-
-func validateForPermissionFind(request *MultifieldRequest) error {
-	err := request.validate()
-	return err
-}
-
-func validateForPermissionCurrent(request *MultifieldRequest) error {
-	err := request.validate()
 	return err
 }
 
@@ -179,10 +164,10 @@ func WithChannelForPermission(channel string) PermissionRequestOption {
 type ConsentPurposeOption func(consentPurposes *ConsentPurpose)
 
 type ConsentPurpose struct {
-	PurposeId		int			`json:"purposeId"`
-	Channel			[]string	`json:"channel"`
-	Ttl				int			`json:"ttl"`
-	Enabled			*bool		`json:"enabled"`
+	PurposeId int      `json:"purposeId"`
+	Channel   []string `json:"channel"`
+	Ttl       int      `json:"ttl"`
+	Enabled   *bool    `json:"enabled"`
 }
 
 func NewConsentPurpose(options ...ConsentPurposeOption) *ConsentPurpose {
@@ -239,4 +224,3 @@ func WithConsentPurposeEnabled(enabled bool) ConsentPurposeOption {
 		consentPurpose.Enabled = &enabled
 	}
 }
-

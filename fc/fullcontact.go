@@ -401,73 +401,19 @@ func (fcClient *fullContactClient) PermissionCreate(permissionRequest *Permissio
 /* FullContact Permission API - PermissionDelete, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionDelete(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	ch := make(chan *APIResponse)
-	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
-		return ch
-	}
-	err := validateForPermissionDelete(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-
-	reqBytes, err := json.Marshal(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	// Send Asynchronous Request in Goroutine
-	go fcClient.do(permissionDeleteUrl, reqBytes, ch)
-	return ch
+	return fcClient.validateAndSendMultiFieldRequestAsync(permissionDeleteUrl, multifieldRequest)
 }
 
 /* FullContact Permission API - PermissionFind, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionFind(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	ch := make(chan *APIResponse)
-	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
-		return ch
-	}
-	err := validateForPermissionFind(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-
-	reqBytes, err := json.Marshal(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	// Send Asynchronous Request in Goroutine
-	go fcClient.do(permissionFindUrl, reqBytes, ch)
-	return ch
+	return fcClient.validateAndSendMultiFieldRequestAsync(permissionFindUrl, multifieldRequest)
 }
 
 /* FullContact Permission API - PermissionCurrent, takes an PermissionRequest and returns a channel of type APIResponse.
 Request is converted to JSON and sends a Asynchronous request */
 func (fcClient *fullContactClient) PermissionCurrent(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	ch := make(chan *APIResponse)
-	if multifieldRequest == nil {
-		go sendToChannel(ch, nil, "", NewFullContactError("Multifield Request can't be nil"))
-		return ch
-	}
-	err := validateForPermissionCurrent(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-
-	reqBytes, err := json.Marshal(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	// Send Asynchronous Request in Goroutine
-	go fcClient.do(permissionCurrentUrl, reqBytes, ch)
-	return ch
+	return fcClient.validateAndSendMultiFieldRequestAsync(permissionCurrentUrl, multifieldRequest)
 }
 
 /* FullContact Permission API - PermissionVerify, takes an PermissionRequest and returns a channel of type APIResponse.
@@ -501,30 +447,7 @@ Request is converted to JSON and sends an Asynchronous request.
 Response will be avaiable in the VerifySignalsResponse field of APIResponse
 */
 func (fcClient *fullContactClient) VerifySignals(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	// ch := make(chan *APIResponse)
-	// if multifieldRequest == nil {
-	// 	go sendToChannel(ch, nil, "", NewFullContactError("MultiFieldRequest can't be nil"))
-	// 	return ch
-	// }
-
-	// err := multifieldRequest.validate()
-	// if err != nil {
-	// 	go sendToChannel(ch, nil, "", err)
-	// 	return ch
-	// }
-
-	// reqBytes, err := json.Marshal(multifieldRequest)
-	// if err != nil {
-	// 	go sendToChannel(ch, nil, "", err)
-	// 	return ch
-	// }
-	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	go fcClient.do(verifySignalsUrl, reqBytes, ch)
-	return ch
+	return fcClient.validateAndSendMultiFieldRequestAsync(verifySignalsUrl, multifieldRequest)
 }
 
 /*
@@ -534,13 +457,7 @@ Request is converted to JSON and sends an Asynchronous request.
 Response will be avaiable in the VerifyMatchResponse field of APIResponse
 */
 func (fcClient *fullContactClient) VerifyMatch(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
-	if err != nil {
-		go sendToChannel(ch, nil, "", err)
-		return ch
-	}
-	go fcClient.do(verifyMatchUrl, reqBytes, ch)
-	return ch
+	return fcClient.validateAndSendMultiFieldRequestAsync(verifyMatchUrl, multifieldRequest)
 }
 
 /*
@@ -550,26 +467,37 @@ Request is converted to JSON and sends an Asynchronous request.
 Response will be avaiable in the VerifyActivityResponse field of APIResponse
 */
 func (fcClient *fullContactClient) VerifyActivity(multifieldRequest *MultifieldRequest) chan *APIResponse {
-	ch, reqBytes, err := doVerfiyAPIPrerequisites(multifieldRequest)
+	return fcClient.validateAndSendMultiFieldRequestAsync(verifyActivityUrl, multifieldRequest)
+}
+
+/*
+	This function will perform the `MultifieldRequest` validations and if
+	there are no errors then it'll be marshalled and a `MultifieldRequest` will be
+	made to the specified `url`
+
+	Returns a channel frm which the request response can be obtained
+*/
+func (fcClient *fullContactClient) validateAndSendMultiFieldRequestAsync(url string, multifieldRequest *MultifieldRequest) chan *APIResponse {
+	ch := make(chan *APIResponse)
+	if multifieldRequest == nil {
+		go sendToChannel(ch, nil, "", NewFullContactError("MultiFieldRequest can't be nil"))
+		return ch
+	}
+
+	err := multifieldRequest.validate()
 	if err != nil {
 		go sendToChannel(ch, nil, "", err)
 		return ch
 	}
-	go fcClient.do(verifyActivityUrl, reqBytes, ch)
-	return ch
-}
 
-func doVerfiyAPIPrerequisites(multifieldRequest *MultifieldRequest) (chan *APIResponse, []byte, error) {
-	ch := make(chan *APIResponse)
-	if multifieldRequest == nil {
-		return ch, nil, NewFullContactError("MultiFieldRequest can't be nil")
-	}
-	err := multifieldRequest.validate()
-	if err != nil {
-		return ch, nil, err
-	}
 	reqBytes, err := json.Marshal(multifieldRequest)
-	return ch, reqBytes, err
+	if err != nil {
+		go sendToChannel(ch, nil, "", err)
+		return ch
+	}
+	// Send Asynchronous Request in Goroutine
+	go fcClient.do(url, reqBytes, ch)
+	return ch
 }
 
 func setPersonResponse(apiResponse *APIResponse) {
