@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (fcClient *fullContactClient) newHttpRequest1(url string, reqBytes []byte) (*http.Request, error) {
+func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (*http.Request, error) {
 	var method string
 	var buffer *bytes.Buffer
 
@@ -22,28 +22,6 @@ func (fcClient *fullContactClient) newHttpRequest1(url string, reqBytes []byte) 
 	}
 
 	req, err := http.NewRequest(method, url, buffer)
-	if err != nil {
-		return nil, err
-	}
-	req = fcClient.addHeaders(req)
-	return req, nil
-
-}
-
-// TODO: replace the get and post request creators with a single request creator
-// abstracting those details frm the caller
-func (fcClient *fullContactClient) newHttpRequest(url string, reqBytes []byte) (*http.Request, error) {
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBytes))
-	if err != nil {
-		return nil, err
-	}
-	req = fcClient.addHeaders(req)
-	return req, nil
-
-}
-
-func (fcClient *fullContactClient) newHttpGetRequest(url string, query string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url+"?"+query, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -75,14 +53,7 @@ func isHttpGet(url string) bool {
 }
 
 func (fcClient *fullContactClient) do(url string, reqBytes []byte, ch chan *APIResponse) {
-	var req *http.Request
-	var err error
-	//construct for HTTP GET requests
-	if isHttpGet(url) {
-		req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
-	} else { //POST
-		req, err = fcClient.newHttpRequest(url, reqBytes)
-	}
+	req, err := fcClient.newHttpRequest(url, reqBytes)
 	if err != nil {
 		sendToChannel(ch, nil, url, err)
 	}
@@ -102,13 +73,7 @@ func (fcClient *fullContactClient) autoRetry(ch chan *APIResponse, err error, re
 	if retryAttemptsDone < min(fcClient.retryHandler.RetryAttempts(), 5) {
 		retryAttemptsDone++
 		time.Sleep(time.Duration(fcClient.retryHandler.RetryDelayMillis()*(1<<(retryAttemptsDone-1))) * time.Millisecond)
-		var req *http.Request
-		var err error
-		if isHttpGet(url) {
-			req, err = fcClient.newHttpGetRequest(url, string(reqBytes))
-		} else { //POST
-			req, err = fcClient.newHttpRequest(url, reqBytes)
-		}
+		req, err := fcClient.newHttpRequest(url, reqBytes)
 		if err != nil {
 			sendToChannel(ch, nil, url, err)
 		}
