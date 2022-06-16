@@ -52,11 +52,11 @@ your integration.
         - `identity.resolve`
         - `identity.mapResolve`
         - `identity.delete`
-    - [Tags](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+    - [Tags](https://docs.fullcontact.com/docs/customer-tags)
         - `tags.create`
         - `tags.get`
         - `tags.delete`
-    - [Audience](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+    - [Audience](https://docs.fullcontact.com/docs/customer-tags#audience-tags)
         - `audience.create`
         - `audience.download`
 
