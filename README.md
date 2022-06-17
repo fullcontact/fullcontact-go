@@ -4,6 +4,39 @@
 
 The official [FullContact](https://www.fullcontact.com/) Golang Client Library for the FullContact V3 APIs.
 
+## Table of contents
+ - [Installation](#installation)
+ - [Working With FullContact Client](#working-with-fullcontact-client)
+    - [Overview](#quick-overview)
+    - [Supported APIs](#supported-apis)
+- [Authentication](#providing-authentication-to-fullcontact-client)
+- [Making FullContact Client](#making-a-fullcontact-client)
+    - [Retry Handler](#retryhandler)
+- [MultiFieldRequest](#multifieldrequest)
+- [Enrich](#enrich)
+    - [Person Enrich](#making-a-person-enrich-request)
+    - [Company Enrich](#company-enrich-request-and-response)
+- [Resolve](#resolve)
+    - [Resolve Request](#resolve-request)
+    - [Resolve Response](#resolve-response)
+- [Tags](#tagsmetadata)
+    - [Tags Create](#creating-tags)
+    - [Tags Get](#get-tags)
+    - [Tags Delete](#delete-tags)
+- [Audience](#audience)
+    -[Audience Create](#audience-create)
+    -[Audience Download](#audience-download)
+- [Permission](#permission)
+    - [Permission Create](#permission-create)
+    - [Permission Verify](#permission-verify)
+    - [Permission Delete](#permission-delete)
+    - [Permission Find](#permission-find)
+    - [Permission Current](#permission-current)
+- [Verify](#verify)
+    - [Verify Activity](#verify-activity)
+    - [Verify Match](#verify-match)
+    - [Verify Signals](#verify-signals)
+
 ## Installation
 
 To install FullContact Go client, use `go get`:
@@ -105,7 +138,7 @@ custom Headers map as these will be automatically added.__
 Custom headers provided will remain same and will be sent with every request made with this client. 
 If you wish to change the headers, make a new client with new custom headers.
 
-#### RetryHandler
+### RetryHandler
 ```go
 type RetryHandler interface {
 	ShouldRetry(responseCode int) bool
@@ -128,6 +161,44 @@ fcClient, err := fc.NewFullContactClient(
 		fc.WithHeader(map[string]string{"Reporting-Key": "FC_GoClient_1.0.0"}),
 		fc.WithTimeout(3000))
 ```
+## MultiFieldRequest
+MultiFieldReqiest provides the ability to match on one or many input fields. The more contact data inputs you can provide, the better. By providing more contact inputs, the more accurate and precise we can get with our identity resolution capabilities.
+
+Several of FullContact Apis requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
+
+- `Emails`: _[]string_
+- `Phones`: _[]string_
+- `Location`: _*Location_
+    - `AddressLine1`: _string_
+    - `AddressLine2`: _string_
+    - `City`: _string_
+    - `Region`: _string_
+    - `RegionCode`: _string_
+    - `PostalCode`: _string_
+- `Name`: _*PersonName_
+    - `Full`: _string_
+    - `Given`: _string_
+    - `Family`: _string_
+- `Profiles`: _[]*Profile_
+    - `Service`: _string_
+    - `Username`: _string_
+    - `Userid`: _string_
+    - `Url`: _string_
+- `Maids`: _[]string_
+- `RecordId`: _string_
+- `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
+- `Placekey`: _string_
+- `PanoramaId`:_string_
+
+```go
+multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+permissionRequest, err := fc.NewPermissionRequest(
+		fc.WithMultifieldRequestForPermission(multifieldRequest))
+```
+
 ## Enrich
 [Enrich API Reference](https://platform.fullcontact.com/docs/apis/enrich/introduction)
 - `person.enrich`
@@ -437,41 +508,6 @@ and `MultifieldRequest` for
 You can build a Permission Request by using `NewPermissionRequest`
 and setting different input parameters that you have.
  
-All Permission Api requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
-
-- `Emails`: _[]string_
-- `Phones`: _[]string_
-- `Location`: _*Location_
-    - `AddressLine1`: _string_
-    - `AddressLine2`: _string_
-    - `City`: _string_
-    - `Region`: _string_
-    - `RegionCode`: _string_
-    - `PostalCode`: _string_
-- `Name`: _*PersonName_
-    - `Full`: _string_
-    - `Given`: _string_
-    - `Family`: _string_
-- `Profiles`: _[]*Profile_
-    - `Service`: _string_
-    - `Username`: _string_
-    - `Userid`: _string_
-    - `Url`: _string_
-- `Maids`: _[]string_
-- `RecordId`: _string_
-- `PersonId`: _string_
-- `LiNonId`: _string_
-- `PartnerId`: _string_
-- `Placekey`: _string_
-- `PanoramaId`:_string_
-
-```go
-multifieldRequest, err := fc.NewMultifieldRequest(
-		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
-permissionRequest, err := fc.NewPermissionRequest(
-		fc.WithMultifieldRequestForPermission(multifieldRequest))
-```
-
 ### Permission Request
 All permission methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
 
@@ -585,47 +621,12 @@ Verify accepts a `MultifieldRequest` as its input for
 - `verify.match`
 - `verify.signals`
 
-All Verify APIs requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
-
-- `Emails`: _[]string_
-- `Phones`: _[]string_
-- `Location`: _*Location_
-    - `AddressLine1`: _string_
-    - `AddressLine2`: _string_
-    - `City`: _string_
-    - `Region`: _string_
-    - `RegionCode`: _string_
-    - `PostalCode`: _string_
-- `Name`: _*PersonName_
-    - `Full`: _string_
-    - `Given`: _string_
-    - `Family`: _string_
-- `Profiles`: _[]*Profile_
-    - `Service`: _string_
-    - `Username`: _string_
-    - `Userid`: _string_
-    - `Url`: _string_
-- `Maids`: _[]string_
-- `RecordId`: _string_
-- `PersonId`: _string_
-- `LiNonId`: _string_
-- `PartnerId`: _string_
-- `Placekey`: _string_
-- `PanoramaId`:_string_
-
-```go
-multifieldRequest, err := fc.NewMultifieldRequest(
-		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
-```
-
 All verify api methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
 
 The following are the corresponding response classes
 - `VerifyActivityResponse` - verify.activity
 - `VerifyMatchResponse` - verify.match
 - `VerifySignalsResponse` - verify.signals
-
-All the apis requires `MultifieldRequest` as request parameter
 
 ### Verify Activity
 #### Parameters:
