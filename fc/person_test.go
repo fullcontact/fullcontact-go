@@ -99,8 +99,8 @@ func TestPersonEnrich(t *testing.T) {
 	assert.Equal(t, "https://img.fullcontact.com/sandbox/1gagrO2K67_oc5DLG_siVCpYVE5UvCu2Z.png", response.Details.Photos[0].Value)
 	assert.Equal(t, "University of California, Berkeley", response.Details.Education[0].Name)
 	assert.Equal(t, "http://marquitaas8.com/", response.Details.Urls[0].Value)
-	assert.Equal(t, "9", response.Epsilon["epsilon_key_1"])
-	assert.Equal(t, "Q", response.Epsilon["epsilon_key_3"])
+	assert.Equal(t, "9", response.Extended["epsilon_key_1"])
+	assert.Equal(t, "Q", response.Extended["epsilon_key_3"])
 }
 
 func TestPersonEnrichAutoRetry(t *testing.T) {

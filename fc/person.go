@@ -17,7 +17,7 @@ type PersonResp struct {
 	Avatar       string            `json:"avatar"`
 	Website      string            `json:"website"`
 	Details      *Details          `json:"details"`
-	Epsilon      map[string]string `json:"extended"`
+	Extended     map[string]string `json:"extended"`
 	Updated      string            `json:"updated"`
 }
 
