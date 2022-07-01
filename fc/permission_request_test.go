@@ -2,8 +2,10 @@ package fullcontact
 
 import (
 	"encoding/json"
-	assert "github.com/stretchr/testify/require"
+	"fmt"
 	"testing"
+
+	assert "github.com/stretchr/testify/require"
 )
 
 func TestNewPermissionRequestForCreate(t *testing.T) {
@@ -32,7 +34,7 @@ func TestNewPermissionRequestForCreate(t *testing.T) {
 		WithProfileForMultifieldRequest(profile1),
 		WithProfileForMultifieldRequest(profile2),
 		WithMaidsForMultifieldRequest("abcd-123-abcd-1234-abcdlkjhasdfgh"),
-		WithMaidsForMultifieldRequest("1234-snbk-lkldiemvmruixp-2kdp-vdm"),)
+		WithMaidsForMultifieldRequest("1234-snbk-lkldiemvmruixp-2kdp-vdm"))
 	assert.NoError(t, err)
 	requestJson := "{\"query\":{\"emails\":[\"marianrd97@outlook.com\",\"test1@gmail.com\",\"test2@outlook.com\"],\"phones\":[\"123-4567890\"],\"maids\":[\"abcd-123-abcd-1234-abcdlkjhasdfgh\",\"1234-snbk-lkldiemvmruixp-2kdp-vdm\"],\"location\":{\"addressLine1\":\"123/23\",\"addressLine2\":\"Some Street\",\"city\":\"Denver\",\"region\":\"Denver\",\"regionCode\":\"123123\",\"postalCode\":\"23124\"},\"name\":{\"given\":\"Marian\",\"family\":\"Reed\",\"full\":\"Marian C Reed\"},\"profiles\":[{\"url\":\"https://twitter.com/mcreedy\"},{\"url\":\"https://twitter.com/mcreedytest\"}]},\"consentPurposes\":[{\"purposeId\":1,\"channel\":[\"web\"],\"ttl\":365,\"enabled\":true}],\"locale\":\"US\",\"ipAddress\":\"127.0.0.1\",\"language\":\"en\",\"collectionMethod\":\"cookiePopUp\",\"collectionLocation\":\"https://kenblahblah.com\",\"tcf\":\"some.valid.tcfv2.string\",\"policyUrl\":\"http://foo.baz\",\"termsService\":\"http://foo.tos\"}"
 	pr, err := NewPermissionRequest(
@@ -119,7 +121,7 @@ func TestNewPermissionRequestForVerify(t *testing.T) {
 func TestNewPermissionRequestWithoutNameAndLocation(t *testing.T) {
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithEmailForMultifieldRequest("marianrd97@outlook.com"))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -129,7 +131,7 @@ func TestNewPermissionRequestWithNameOnlyWithQueryable(t *testing.T) {
 		WithNameForMultifieldRequest(&PersonName{
 			Full: "Marian C Reed",
 		}))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -138,7 +140,7 @@ func TestNewPermissionRequestWithNameOnlyWithoutQueryable(t *testing.T) {
 		WithNameForMultifieldRequest(&PersonName{
 			Full: "Marian C Reed",
 		}))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
@@ -152,7 +154,7 @@ func TestNewPermissionRequestWithLocationOnlyWithQueryable(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -165,7 +167,7 @@ func TestNewPermissionRequestWithLocationOnlyWithoutQueryable(t *testing.T) {
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
@@ -179,7 +181,7 @@ func TestNewPermissionRequestWithLocationWithoutAddressLine1WithQueryable(t *tes
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -192,7 +194,7 @@ func TestNewPermissionRequestWithLocationWithoutAddressLine1WithoutQueryable(t *
 			WithRegionForLocation("Denver"),
 			WithRegionCode("123123"),
 			WithPostalCode("23124"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -202,7 +204,7 @@ func TestNewPermissionRequestWithLocationOnlyAddressLine1WithQueryable(t *testin
 		WithNameForMultifieldRequest(NewPersonName(WithFull("Test Name"))),
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -211,7 +213,7 @@ func TestNewPermissionRequestWithLocationOnlyAddressLine1WithoutQueryable(t *tes
 		WithNameForMultifieldRequest(NewPersonName(WithFull("Test Name"))),
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -222,7 +224,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithQueryable(t 
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -232,7 +234,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndCityWithoutQueryable
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithCity("Denver"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -243,7 +245,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithQueryable(
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -253,7 +255,7 @@ func TestNewPermissionRequestWithLocationWithAddressLine1AndRegionWithoutQueryab
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithRegionCode("123123"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: A valid placekey is required or Location data requires addressLine1 and postalCode or addressLine1, city and regionCode (or region)")
 }
 
@@ -263,7 +265,7 @@ func TestNewPermissionRequestWithValidLocation1(t *testing.T) {
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("12343"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -274,7 +276,7 @@ func TestNewPermissionRequestWithValidLocation2(t *testing.T) {
 			WithAddressLine1("123/23"),
 			WithCity("Denver"),
 			WithRegionCode("123123"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -286,7 +288,7 @@ func TestNewPermissionRequestWithValidLocation3(t *testing.T) {
 			WithAddressLine2("Some Street"),
 			WithCity("Denver"),
 			WithRegionForLocation("123123"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -296,7 +298,7 @@ func TestNewPermissionRequestWithValidName(t *testing.T) {
 		WithLocationForMultifieldRequest(NewLocation(
 			WithAddressLine1("123/23"),
 			WithPostalCode("23432"))))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
@@ -304,14 +306,14 @@ func TestNewPermissionRequestWithValidNameWithValidPlacekey(t *testing.T) {
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithNameForMultifieldRequest(&PersonName{Given: "Marian", Family: "Reed"}),
 		WithPlacekeyForMultifieldRequest("226@5z4-zvy-ffz"))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.NoError(t, err)
 }
 
 func TestNewPermissionRequestWithPlacekeyOnly(t *testing.T) {
 	multifieldRequest, _ := NewMultifieldRequest(
 		WithPlacekeyForMultifieldRequest("226@5z4-zvy-ffz"))
-	err := validateForPermissionFind(multifieldRequest)
+	err := multifieldRequest.validate()
 	assert.EqualError(t, err, "FullContactError: If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 }
 
@@ -612,7 +614,7 @@ func TestNilPermissionDeleteRequest(t *testing.T) {
 	ch := fcTestClient.PermissionDelete(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: MultiFieldRequest can't be nil")
 }
 
 func TestNilPermissionFindRequest(t *testing.T) {
@@ -620,7 +622,7 @@ func TestNilPermissionFindRequest(t *testing.T) {
 	ch := fcTestClient.PermissionFind(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
+	assert.EqualError(t, resp.Err, "FullContactError: MultiFieldRequest can't be nil")
 }
 
 func TestNilPermissionCurrentRequest(t *testing.T) {
@@ -628,7 +630,8 @@ func TestNilPermissionCurrentRequest(t *testing.T) {
 	ch := fcTestClient.PermissionCurrent(nil)
 	resp := <-ch
 	assert.False(t, resp.IsSuccessful)
-	assert.EqualError(t, resp.Err, "FullContactError: Multifield Request can't be nil")
+	fmt.Println(resp.Err)
+	assert.EqualError(t, resp.Err, "FullContactError: MultiFieldRequest can't be nil")
 }
 
 func TestNilPermissionVerifyRequest(t *testing.T) {

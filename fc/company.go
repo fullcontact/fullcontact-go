@@ -1,45 +1,19 @@
 package fullcontact
 
 type CompanyResponse struct {
-	Name       string          `json:"name"`
-	Location   string          `json:"location"`
-	Twitter    string          `json:"twitter"`
-	Linkedin   string          `json:"linkedin"`
-	Bio        string          `json:"bio"`
-	Logo       string          `json:"logo"`
-	Website    string          `json:"website"`
-	Locale     string          `json:"locale"`
-	Category   string          `json:"category"`
-	Updated    string          `json:"updated"`
-	Founded    int             `json:"founded"`
-	Employees  int             `json:"employees"`
-	DataAddOns []DataAddOns    `json:"dataAddOns"`
-	Details    *CompanyDetails `json:"details"`
-}
-
-type CompanySearchResponse struct {
-	LookupDomain string                `json:"lookupDomain"`
-	OrgName      string                `json:"orgName"`
-	Logo         string                `json:"logo"`
-	Location     CompanySearchLocation `json:"location"`
-}
-
-type CompanySearchLocation struct {
-	Locality string        `json:"locality"`
-	Region   CompanyRegion `json:"region"`
-	Country  CompanyRegion `json:"country"`
-}
-
-type CompanyRegion struct {
-	Name string `json:"name"`
-	Code string `json:"code"`
-}
-
-type DataAddOns struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	DocLink     string `json:"docLink"`
+	Name      string          `json:"name"`
+	Location  string          `json:"location"`
+	Twitter   string          `json:"twitter"`
+	Linkedin  string          `json:"linkedin"`
+	Bio       string          `json:"bio"`
+	Logo      string          `json:"logo"`
+	Website   string          `json:"website"`
+	Locale    string          `json:"locale"`
+	Category  string          `json:"category"`
+	Updated   string          `json:"updated"`
+	Founded   int             `json:"founded"`
+	Employees int             `json:"employees"`
+	Details   *CompanyDetails `json:"details"`
 }
 
 type CompanyDetails struct {

@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	fc "github.com/fullcontact/fullcontact-go/fc"
 	"log"
+
+	fc "github.com/fullcontact/fullcontact-go/fc"
 )
 
 type CustomRetryHandler struct{}
@@ -80,18 +81,6 @@ func main() {
 		fmt.Printf("Company Name: %v", resp.CompanyResponse.Name)
 	}
 
-	//Company Search
-	companySearchRequest, err := fc.NewCompanyRequest(fc.WithCompanyName("FullContact"))
-	if err != nil {
-		log.Fatalln(err)
-		return
-	}
-	resp = <-fcClient.CompanySearch(companySearchRequest)
-	fmt.Printf("\n\nCompany Search API Response: %v", resp)
-	if resp.IsSuccessful {
-		fmt.Printf("Company Lookup Domain: %v", resp.CompanySearchResponse[0].LookupDomain)
-	}
-
 	//Resolve
 	//Identity Map
 	resolveRequest, err := fc.NewResolveRequest(
@@ -133,7 +122,7 @@ func main() {
 	}
 
 	//Identity Map Resolve
-	resolveRequest, err := fc.NewResolveRequest(
+	resolveRequest, err = fc.NewResolveRequest(
 		fc.WithRecordIdForResolve("r1"),
 		fc.WithEmailForResolve("bart@fullcontct.com"),
 		fc.WithGeneratePidForResolve(true))
@@ -200,16 +189,8 @@ func main() {
 		fmt.Println(resp.AudienceResponse.WriteAudienceBytesToFile(requestId + "_audienceFile.json.gz"))
 	}
 
-	//Email Verification
-	resp = <-fcClient.EmailVerification("bart@fullcontact.com")
-	fmt.Printf("\n\nEmail Verification API Response: %v", resp)
-	if resp.IsSuccessful {
-		fmt.Println(resp.EmailVerificationResponse)
-	}
-
 	//Permission
 	//Permission Create
-
 	multifieldRequest, err := fc.NewMultifieldRequest(
 		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
 
@@ -272,5 +253,24 @@ func main() {
 	resp = <-fcClient.PermissionDelete(multifieldRequest)
 	if resp.IsSuccessful == true {
 		fmt.Printf("Permission Delete API Response: %v", resp)
+	}
+
+	// Verify API Samples
+	// Verify Signals
+	resp = <-fcClient.VerifySignals(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Signals API Response: %v", resp)
+	}
+
+	// Verify Match
+	resp = <-fcClient.VerifyMatch(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Match API Response: %v", resp)
+	}
+
+	// Verify Activity
+	resp = <-fcClient.VerifyActivity(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Activity API Response: %v", resp)
 	}
 }

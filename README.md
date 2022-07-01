@@ -4,6 +4,39 @@
 
 The official [FullContact](https://www.fullcontact.com/) Golang Client Library for the FullContact V3 APIs.
 
+## Table of contents
+ - [Installation](#installation)
+ - [Working With FullContact Client](#working-with-fullcontact-client)
+    - [Overview](#quick-overview)
+    - [Supported APIs](#supported-apis)
+- [Authentication](#providing-authentication-to-fullcontact-client)
+- [Making FullContact Client](#making-a-fullcontact-client)
+    - [Retry Handler](#retryhandler)
+- [MultiFieldRequest](#multifieldrequest)
+- [Enrich](#enrich)
+    - [Person Enrich](#making-a-person-enrich-request)
+    - [Company Enrich](#company-enrich-request-and-response)
+- [Resolve](#resolve)
+    - [Resolve Request](#resolve-request)
+    - [Resolve Response](#resolve-response)
+- [Tags](#tagsmetadata)
+    - [Tags Create](#creating-tags)
+    - [Tags Get](#get-tags)
+    - [Tags Delete](#delete-tags)
+- [Audience](#audience)
+    - [Audience Create](#audience-create)
+    - [Audience Download](#audience-download)
+- [Permission](#permission)
+    - [Permission Create](#permission-create)
+    - [Permission Verify](#permission-verify)
+    - [Permission Delete](#permission-delete)
+    - [Permission Find](#permission-find)
+    - [Permission Current](#permission-current)
+- [Verify](#verify)
+    - [Verify Activity](#verify-activity)
+    - [Verify Match](#verify-match)
+    - [Verify Signals](#verify-signals)
+
 ## Installation
 
 To install FullContact Go client, use `go get`:
@@ -42,34 +75,35 @@ Once you’re on board with the API behavior, FullContact Client library should 
 your integration.
 
 ### Supported APIs
-- _[Enrich](https://platform.fullcontact.com/docs/apis/enrich/introduction)_
+- _[Enrich](https://docs.fullcontact.com/docs/enrich-overview)_
     - `person.enrich`
     - `company.enrich`
-    - `company.search`
 
 - Private Identity Cloud
-    - _[Resolve](https://platform.fullcontact.com/docs/apis/resolve/introduction)_
+    - _[Resolve](https://docs.fullcontact.com/docs/resolve-overview)_
         - `identity.map`
         - `identity.resolve`
         - `identity.mapResolve`
         - `identity.delete`
-    - [Tags](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+    - [Tags](https://docs.fullcontact.com/docs/customer-tags)
         - `tags.create`
         - `tags.get`
         - `tags.delete`
-    - [Audience](https://platform.fullcontact.com/docs/apis/resolve/customer-tags)
+    - [Audience](https://docs.fullcontact.com/docs/customer-tags#audience-tags)
         - `audience.create`
         - `audience.download`
-- _[Verification](https://platform.fullcontact.com/docs/apis/verification/introduction)_
-    - `v2/verification/email`
 
-- _[Permission](https://platform.fullcontact.com/docs/apis/permission/introduction)_
+- _[Permission](https://docs.fullcontact.com/docs/permission-overview)_
     - `permission.create`
     - `permission.delete`
     - `permission.find`
     - `permission.current`
     - `permission.verify`
 
+- _[Verify](https://docs.fullcontact.com/docs/verify-overview)_
+    - `verify.activity`
+    - `verify.match`
+    - `verify.signals`
 ## Providing Authentication to FullContact Client
 FullContact client uses ```CredentialsProvider``` interface for Authentication. Different ways 
 to provide authentication:
@@ -104,7 +138,7 @@ custom Headers map as these will be automatically added.__
 Custom headers provided will remain same and will be sent with every request made with this client. 
 If you wish to change the headers, make a new client with new custom headers.
 
-#### RetryHandler
+### RetryHandler
 ```go
 type RetryHandler interface {
 	ShouldRetry(responseCode int) bool
@@ -127,11 +161,48 @@ fcClient, err := fc.NewFullContactClient(
 		fc.WithHeader(map[string]string{"Reporting-Key": "FC_GoClient_1.0.0"}),
 		fc.WithTimeout(3000))
 ```
+## MultiFieldRequest
+MultiFieldReqiest provides the ability to match on one or many input fields. The more contact data inputs you can provide, the better. By providing more contact inputs, the more accurate and precise we can get with our identity resolution capabilities.
+
+Several of FullContact Apis requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
+
+- `Emails`: _[]string_
+- `Phones`: _[]string_
+- `Location`: _*Location_
+    - `AddressLine1`: _string_
+    - `AddressLine2`: _string_
+    - `City`: _string_
+    - `Region`: _string_
+    - `RegionCode`: _string_
+    - `PostalCode`: _string_
+- `Name`: _*PersonName_
+    - `Full`: _string_
+    - `Given`: _string_
+    - `Family`: _string_
+- `Profiles`: _[]*Profile_
+    - `Service`: _string_
+    - `Username`: _string_
+    - `Userid`: _string_
+    - `Url`: _string_
+- `Maids`: _[]string_
+- `RecordId`: _string_
+- `PersonId`: _string_
+- `LiNonId`: _string_
+- `PartnerId`: _string_
+- `Placekey`: _string_
+- `PanoramaId`:_string_
+
+```go
+multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+permissionRequest, err := fc.NewPermissionRequest(
+		fc.WithMultifieldRequestForPermission(multifieldRequest))
+```
+
 ## Enrich
 [Enrich API Reference](https://platform.fullcontact.com/docs/apis/enrich/introduction)
 - `person.enrich`
 - `company.enrich`
-- `company.search`
 #### Making a Person Enrich Request
 Our V3 Person Enrich supports __Multi Field Request:__ ability to match on __one or many__ input fields
 
@@ -169,7 +240,6 @@ such as:
 - `LiNonId`: _string_
 - `PartnerId`: _string_
 - `Placekey`: _string_
-- `VerifiedPhysical`: _bool_
 - `MaxMaids`: _int_
 - `PanoramaId`:_string_
 
@@ -215,11 +285,8 @@ if resp.IsSuccessful == true {
 ```
 
 #### Company Enrich Request and Response
-To Enrich Company data FullContact library provides two methods __Lookup by Company Domain__ or
-__Search by Company Name__. More data is available through the Lookup by Company Domain, 
-but if the domain is unknown, use our Search by Company Name API to find the list of domains 
-that could be related to the Company you are looking for and then call the Lookup by 
-Company Domain with that domain to get the full information about the company.
+To Enrich Company data FullContact library provides the method __Lookup by Company Domain__. 
+All available details of the company is available through the Lookup by Company Domain.
 
 ##### Lookup by Company Domain
 - Request:
@@ -236,32 +303,6 @@ resp := <-fcClient.CompanyEnrich(companyEnrichRequest)
 fmt.Printf("Company Enrich API Response: %v", resp)
 if resp.IsSuccessful {
     fmt.Printf("Company Name: %v", resp.CompanyResponse.Name)
-}
-```
-
-##### Search by Company Name
-- Request:
-    - Parameters:
-        - `companyName`
-        - `webhookUrl` 
-        - `location`
-        - `locality` 
-        - `region`
-        - `country`
-        - `sort`
-```go
-companySearchRequest, err := fc.NewCompanyRequest(fc.WithCompanyName("FullContact"))
-if err != nil {
-    log.Fatalln(err)
-    return
-}
-```
-- Response: It returns an array of `CompanySearchResponse`.
-```go
-resp := <-fcClient.CompanySearch(companySearchRequest)
-fmt.Printf("Company Search API Response: %v", resp)
-if resp.IsSuccessful {
-    fmt.Printf("Company Lookup Domain: %v", resp.CompanySearchResponse[0].LookupDomain)
 }
 ```
 
@@ -444,20 +485,6 @@ if resp.IsSuccessful {
 }
 ```
 
-## Verification
-[EmailVerification API Reference](https://platform.fullcontact.com/docs/apis/verification/introduction)
-- `v2/verification/email`
-
-FullContact Email Verification API accepts single `email` request, as a `string`. Requests are sent 
-using HTTP GET and request email is set as a query parameter.
-```go
-resp := <-fcClient.EmailVerification("bart@fullcontact.com")
-fmt.Printf("\n\nEmail Verification API Response: %v", resp)
-if resp.IsSuccessful {
-    fmt.Println(resp.EmailVerificationResponse)
-}
-```
-
 ## Permission
 [Permission API Reference](https://platform.fullcontact.com/docs/apis/permission/introduction)
 - `permission.create`
@@ -481,41 +508,6 @@ and `MultifieldRequest` for
 You can build a Permission Request by using `NewPermissionRequest`
 and setting different input parameters that you have.
  
-All Permission Api requires `MultifieldRequest` requests, which can be constructed by using `NewMultifieldRequest` and following are it's parameters.
-
-- `Emails`: _[]string_
-- `Phones`: _[]string_
-- `Location`: _*Location_
-    - `AddressLine1`: _string_
-    - `AddressLine2`: _string_
-    - `City`: _string_
-    - `Region`: _string_
-    - `RegionCode`: _string_
-    - `PostalCode`: _string_
-- `Name`: _*PersonName_
-    - `Full`: _string_
-    - `Given`: _string_
-    - `Family`: _string_
-- `Profiles`: _[]*Profile_
-    - `Service`: _string_
-    - `Username`: _string_
-    - `Userid`: _string_
-    - `Url`: _string_
-- `Maids`: _[]string_
-- `RecordId`: _string_
-- `PersonId`: _string_
-- `LiNonId`: _string_
-- `PartnerId`: _string_
-- `Placekey`: _string_
-- `PanoramaId`:_string_
-
-```go
-multifieldRequest, err := fc.NewMultifieldRequest(
-		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
-permissionRequest, err := fc.NewPermissionRequest(
-		fc.WithMultifieldRequestForPermission(multifieldRequest))
-```
-
 ### Permission Request
 All permission methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
 
@@ -566,21 +558,21 @@ class: `PermissionVerifyResponse` with following fields.
 
 ### Permission Delete
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionDeleteResponse`. A basic API response with response code as 202 if successful.
 
 ### Permission Find
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionFindResponse` with list of Permissions.
 
 ### Permission Current
 #### Parameters:
-Query takes a `MultiFieldReq`
+Query takes a `MultifieldRequest`
 
 #### Returns:
 class: `PermissionCurrentResponse` with set of current permissions
@@ -614,4 +606,150 @@ fmt.Printf("Permission Current API Response: %v", resp)
 if resp.IsSuccessful {
     fmt.Printf("Permission Current: %v", resp.PermissionCurrentResponse)
 }
+```
+
+## Verify
+[Verify API Reference](hhttps://docs.fullcontact.com/reference/activity)
+- `verify.activity`
+- `verify.match`
+- `verify.signals`
+
+### Verify Request
+Verify accepts a `MultifieldRequest` as its input for
+
+- `verify.activity`
+- `verify.match`
+- `verify.signals`
+
+All verify api methods returns a `channel` of type `APIResponse` from which you can get corresponding response classes.
+
+The following are the corresponding response classes
+- `VerifyActivityResponse` - verify.activity
+- `VerifyMatchResponse` - verify.match
+- `VerifySignalsResponse` - verify.signals
+
+### Verify Activity
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifyActivityResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `Emails`: _float64_
+- `Message`: _string_
+
+The `Message` field will contain the error message if the individual cannot be verified. If person can be identified then, the `Emails` field will contain the verify score.
+
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+        
+    resp = <-fcClient.VerifyActivity(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Activity API Response: %v", resp)
+	}
+```
+
+### Verify Match
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifyMatchResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `City`: _bool_
+- `Region`: _bool_
+- `Country`: _bool_
+- `Continent`: _bool_
+- `PostalCode`: _bool_
+- `FamilyName`: _bool_
+- `GivenName`: _bool_
+- `Phone`: _bool_
+- `Email`: _bool_
+- `Maid`: _bool_
+- `Social`: _bool_
+- `NonId`: _bool_
+
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+
+    resp = <-fcClient.VerifyMatch(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Match API Response: %v", resp)
+	}
+```
+
+### Verify Signals
+#### Parameters:
+Query takes a `MultifieldRequest`
+
+#### Returns:
+class: `VerifySignalsResponse`. A basic API response with response code as 200 if successful with the following fields
+
+- `Emails`: _[]VerifiedEmail_
+    - `Md5` : _string_
+    - `Sha1` : _string_
+    - `Sha256` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `PersonIds`: _[]string_
+- `Phones`: _[]VerifiedPhone_
+    - `Label`: _string_
+    - `Type`: _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `Maids`: _[]VerifiedIdentifier_
+    - `Id` : _string_
+    - `Type` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `Name`: _VerifiedName_
+    - `GivenName` : _string_
+    - `FamilyName` : _string_
+- `PanoIds`: _[]PanoIds_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `NonIds`: _[]NonIds_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Observations` : _int_
+    - `Confidence` : _float64_
+- `IpAddresses`: _[]IpAddresses_
+    - `Id` : _string_
+    - `FirstSeenMs` : _int64_
+    - `LastSeenMs` : _int64_
+    - `Confidence` : _float64_
+- `SocialProfiles`: _VerifiedSocialProfile_
+    - `TwitterUrl` : _string_
+    - `LinkedInUrl` : _string_
+- `Demographics`: _VerifiedDemographics_
+    - `Age` : _int_
+    - `AgeRange` : _string_
+    - `Gender` : _string_
+    - `LocationFormatted` : _string_
+- `Employment`: _VerifiedEmployment_
+    - `Current` : _bool_
+    - `Company` : _string_
+    - `Title` : _string_
+- `Message`: _string_
+
+```go
+    multifieldRequest, err := fc.NewMultifieldRequest(
+		fc.WithEmailForMultifieldRequest("bart@fullcontact.com"))
+
+    resp = <-fcClient.VerifySignals(multifieldRequest)
+	if resp.IsSuccessful == true {
+		fmt.Printf("Verify Signals API Response: %v", resp)
+	}
 ```

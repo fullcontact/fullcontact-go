@@ -37,13 +37,6 @@ func validateForCompanyEnrich(request *CompanyRequest) error {
 	return nil
 }
 
-func validateForCompanySearch(request *CompanyRequest) error {
-	if !isPopulated(request.CompanyName) {
-		return NewFullContactError("Company Name is mandatory for Company Search")
-	}
-	return nil
-}
-
 func WithDomain(domain string) CompanyRequestOption {
 	return func(cr *CompanyRequest) {
 		cr.Domain = domain
