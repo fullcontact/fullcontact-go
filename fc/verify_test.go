@@ -79,7 +79,7 @@ func TestVerfiyActivityStatus403(t *testing.T) {
 
 func TestVerifyMatch(t *testing.T) {
 	ch := make(chan *APIResponse)
-	respJson := "{\"city\":true,\"region\":false,\"country\":true,\"continent\":false,\"postalCode\":true,\"familyName\":false,\"givenName\":true,\"phone\":false,\"email\":true,\"maid\":false,\"social\":true,\"nonId\":false,\"risk\":0.78}"
+	respJson := "{\"city\":\"household\",\"region\":\"household\",\"country\":\"household\",\"continent\":false,\"postalCode\":\"household\",\"familyName\":\"household\",\"givenName\":\"unknown\",\"phone\":\"tangled\",\"email\":\"self\",\"maid\":false,\"social\":true,\"nonId\":false,\"risk\":0.78}"
 	fcTestClient, testServer := getTestServerAndClient(verifyMatchUrl, respJson, 200)
 	defer testServer.Close()
 	go fcTestClient.do(testServer.URL, nil, ch)
@@ -91,15 +91,15 @@ func TestVerifyMatch(t *testing.T) {
 	assert.Equal(t, "200 OK", resp.Status)
 	assert.True(t, strings.Contains(resp.String(), "RawHttpRespons"))
 	// Validating Match Fields
-	assert.True(t, response.City)
-	assert.False(t, response.Region)
-	assert.True(t, response.Country)
+	assert.Equal(t, "household", response.City)
+	assert.Equal(t, "household", response.Region)
+	assert.Equal(t, "household", response.Country)
+	assert.Equal(t, "household", response.PostalCode)
+	assert.Equal(t, "household", response.FamilyName)
+	assert.Equal(t, "unknown", response.GivenName)
+	assert.Equal(t, "tangled", response.Phone)
+	assert.Equal(t, "self", response.Email)
 	assert.False(t, response.Continent)
-	assert.True(t, response.PostalCode)
-	assert.False(t, response.FamilyName)
-	assert.True(t, response.GivenName)
-	assert.False(t, response.Phone)
-	assert.True(t, response.Email)
 	assert.False(t, response.Maid)
 	assert.True(t, response.Social)
 	assert.False(t, response.NonId)

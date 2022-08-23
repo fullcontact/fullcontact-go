@@ -16,15 +16,15 @@ type VerifySignalsResponse struct {
 }
 
 type VerifyMatchResponse struct {
-	City       bool    `json:"city"`
-	Region     bool    `json:"region"`
-	Country    bool    `json:"country"`
+	City       string  `json:"city"`
+	Region     string  `json:"region"`
+	Country    string  `json:"country"`
 	Continent  bool    `json:"continent"`
-	PostalCode bool    `json:"postalCode"`
-	FamilyName bool    `json:"familyName"`
-	GivenName  bool    `json:"givenName"`
-	Phone      bool    `json:"phone"`
-	Email      bool    `json:"email"`
+	PostalCode string  `json:"postalCode"`
+	FamilyName string  `json:"familyName"`
+	GivenName  string  `json:"givenName"`
+	Phone      string  `json:"phone"`
+	Email      string  `json:"email"`
 	Maid       bool    `json:"maid"`
 	Social     bool    `json:"social"`
 	NonId      bool    `json:"nonId"`
