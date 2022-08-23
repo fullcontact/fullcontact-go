@@ -16,23 +16,26 @@ type VerifySignalsResponse struct {
 }
 
 type VerifyMatchResponse struct {
-	City       bool `json:"city"`
-	Region     bool `json:"region"`
-	Country    bool `json:"country"`
-	Continent  bool `json:"continent"`
-	PostalCode bool `json:"postalCode"`
-	FamilyName bool `json:"familyName"`
-	GivenName  bool `json:"givenName"`
-	Phone      bool `json:"phone"`
-	Email      bool `json:"email"`
-	Maid       bool `json:"maid"`
-	Social     bool `json:"social"`
-	NonId      bool `json:"nonId"`
+	City       bool    `json:"city"`
+	Region     bool    `json:"region"`
+	Country    bool    `json:"country"`
+	Continent  bool    `json:"continent"`
+	PostalCode bool    `json:"postalCode"`
+	FamilyName bool    `json:"familyName"`
+	GivenName  bool    `json:"givenName"`
+	Phone      bool    `json:"phone"`
+	Email      bool    `json:"email"`
+	Maid       bool    `json:"maid"`
+	Social     bool    `json:"social"`
+	NonId      bool    `json:"nonId"`
+	Risk       float64 `json:"risk"`
 }
 
 type VerifyActivityResponse struct {
-	Emails  float64 `json:"emails"`
-	Message string  `json:"message"`
+	Emails     float64 `json:"emails"`
+	Online     float64 `json:"online"`
+	Social     float64 `json:"social"`
+	Employment float64 `json:"employment"`
 }
 
 type VerifiedEmail struct {
