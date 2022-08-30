@@ -41,8 +41,6 @@ type Details struct {
 	Triggers     Triggers     `json:"triggers"`
 	MarketTrends MarketTrends `json:"marketTrends"`
 }
-type Surveys struct {
-}
 
 type Triggers struct {
 	Type Type        `json:"type"`

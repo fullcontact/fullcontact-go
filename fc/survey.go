@@ -1,6 +1,6 @@
 package fullcontact
 
-type Survey struct {
+type Surveys struct {
 	Own          Own          `json:"own"`
 	Collectibles Collectibles `json:"collectibles"`
 	DietConcerns DietConcerns `json:"dietConcerns"`
