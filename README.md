@@ -636,9 +636,11 @@ Query takes a `MultifieldRequest`
 class: `VerifyActivityResponse`. A basic API response with response code as 200 if successful with the following fields
 
 - `Emails`: _float64_
-- `Message`: _string_
+- `Online`: _float64_
+- `Social`: _float64_
+- `Employment`: _float64_
 
-The `Message` field will contain the error message if the individual cannot be verified. If person can be identified then, the `Emails` field will contain the verify score.
+If person can be identified then, the `Emails`, `Online`, `Social`, `Employment` field will contain the verify score.
 
 ```go
     multifieldRequest, err := fc.NewMultifieldRequest(
@@ -660,15 +662,12 @@ class: `VerifyMatchResponse`. A basic API response with response code as 200 if 
 - `City`: _bool_
 - `Region`: _bool_
 - `Country`: _bool_
-- `Continent`: _bool_
 - `PostalCode`: _bool_
 - `FamilyName`: _bool_
 - `GivenName`: _bool_
 - `Phone`: _bool_
 - `Email`: _bool_
-- `Maid`: _bool_
-- `Social`: _bool_
-- `NonId`: _bool_
+- `Risk`: _float64_
 
 ```go
     multifieldRequest, err := fc.NewMultifieldRequest(
