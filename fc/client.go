@@ -39,8 +39,11 @@ func NewFullContactClient(options ...ClientOption) (*fullContactClient, error) {
 	if c.retryHandler == nil {
 		c.retryHandler = &DefaultRetryHandler{}
 	}
-	c.httpClient = &http.Client{
-		Timeout: time.Duration(c.connectTimeoutMillis) * time.Millisecond,
+
+	if c.httpClient == nil {
+		c.httpClient = &http.Client{
+			Timeout: time.Duration(c.connectTimeoutMillis) * time.Millisecond,
+		}
 	}
 
 	return c, nil
@@ -69,5 +72,11 @@ func WithHeaders(headers map[string]string) ClientOption {
 func WithRetryHandler(retryHandler RetryHandler) ClientOption {
 	return func(fc *fullContactClient) {
 		fc.retryHandler = retryHandler
+	}
+}
+
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(fc *fullContactClient) {
+		fc.httpClient = httpClient
 	}
 }
