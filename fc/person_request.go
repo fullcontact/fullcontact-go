@@ -16,7 +16,7 @@ type PersonRequest struct {
 	PartnerId  string      `json:"partnerId,omitempty"`
 	LiNonId    string      `json:"li_nonid,omitempty"`
 	Confidence string      `json:"confidence,omitempty"`
-	Infer      bool        `json:"infer,omitempty"`
+	Infer      *bool       `json:"infer,omitempty"`
 	Placekey   string      `json:"placekey,omitempty"`
 	MaxMaids   int         `json:"maxMaids,omitempty"`
 	PanoramaId string      `json:"panoramaId,omitempty"`
@@ -216,7 +216,7 @@ func WithConfidence(confidence string) PersonRequestOption {
 
 func WithInfer(infer bool) PersonRequestOption {
 	return func(pr *PersonRequest) {
-		pr.Infer = infer
+		pr.Infer = &infer
 	}
 }
 
