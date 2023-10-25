@@ -503,6 +503,10 @@ func (fcClient *fullContactClient) validateAndSendMultiFieldRequestAsync(url str
 func setPersonResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -524,6 +528,10 @@ func setPersonResponse(apiResponse *APIResponse) {
 func setCompanyResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -545,6 +553,10 @@ func setCompanyResponse(apiResponse *APIResponse) {
 func setResolveResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -566,6 +578,10 @@ func setResolveResponse(apiResponse *APIResponse) {
 func setResolveResponseWithTags(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -587,6 +603,10 @@ func setResolveResponseWithTags(apiResponse *APIResponse) {
 func setTagsResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -609,6 +629,10 @@ func setAudienceResponse(apiResponse *APIResponse) {
 	contentType := apiResponse.RawHttpResponse.Header.Get("Content-Type")
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -634,6 +658,10 @@ func setAudienceResponse(apiResponse *APIResponse) {
 func setPermissionCreateResponse(apiResponse *APIResponse) {
 	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -646,6 +674,10 @@ func setPermissionCreateResponse(apiResponse *APIResponse) {
 func setPermissionDeleteResponse(apiResponse *APIResponse) {
 	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -658,6 +690,10 @@ func setPermissionDeleteResponse(apiResponse *APIResponse) {
 func setPermissionFindResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -679,6 +715,10 @@ func setPermissionFindResponse(apiResponse *APIResponse) {
 func setPermissionVerifyResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -700,6 +740,10 @@ func setPermissionVerifyResponse(apiResponse *APIResponse) {
 func setPermissionCurrentResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -721,6 +765,10 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 func setVerfiySignalsResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -742,6 +790,10 @@ func setVerfiySignalsResponse(apiResponse *APIResponse) {
 func setVerfiyMatchResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -763,6 +815,10 @@ func setVerfiyMatchResponse(apiResponse *APIResponse) {
 func setVerfiyActivityResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	
 	if err != nil {
 		apiResponse.Err = err
 		return
