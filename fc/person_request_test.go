@@ -249,17 +249,21 @@ func TestWithConfidence(t *testing.T) {
 	assert.EqualError(t, err, "FullContactError: Confidence value can only be 'LOW', 'MED', 'HIGH', 'MAX'")
 }
 
-func TestWithHashedEmailType(t *testing.T) {
-	pr, err := NewPersonRequest(WithHemType("sha256"))
-	assert.NoError(t, err)
-	err = validatePersonRequest(pr)
+func TestWithValidHemType(t *testing.T) {
+	pr, _ := NewPersonRequest(WithHemType("sha256"))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
+func TestWithInvalidHemType(t *testing.T) {
+	pr, _ := NewPersonRequest(WithHemType("invalid"))
+	err := validatePersonRequest(pr)
+	assert.EqualError(t, err, "FullContactError: HemType value can only be 'md5', 'sha1', 'sha256'")
+}
+
 func TestWithMaxEmails(t *testing.T) {
-	pr, err := NewPersonRequest(WIthMaxEmails(1))
-	assert.NoError(t, err)
-	err = validatePersonRequest(pr)
+	pr, _ := NewPersonRequest(WIthMaxEmails(1))
+	err := validatePersonRequest(pr)
 	assert.NoError(t, err)
 }
 
