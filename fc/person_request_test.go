@@ -250,7 +250,7 @@ func TestWithConfidence(t *testing.T) {
 }
 
 func TestWithHashedEmailType(t *testing.T) {
-	pr, err := NewPersonRequest(WithHashedEmailType("sha256"))
+	pr, err := NewPersonRequest(WithHemType("sha256"))
 	assert.NoError(t, err)
 	err = validatePersonRequest(pr)
 	assert.NoError(t, err)

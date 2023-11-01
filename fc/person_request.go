@@ -240,7 +240,7 @@ func WithPanoramaID(panoramaId string) PersonRequestOption {
 	}
 }
 
-func WithHashedEmailType(hashedEmailType string) PersonRequestOption {
+func WithHemType(hashedEmailType string) PersonRequestOption {
 	return func(pr *PersonRequest) {
 		pr.HashedEmailType = hashedEmailType
 	}
