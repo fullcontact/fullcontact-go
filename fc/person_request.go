@@ -20,6 +20,8 @@ type PersonRequest struct {
 	Placekey   string      `json:"placekey,omitempty"`
 	MaxMaids   int         `json:"maxMaids,omitempty"`
 	PanoramaId string      `json:"panoramaId,omitempty"`
+	HemType    string      `json:"hemType,omitempty"`
+	MaxEmails  int         `json:"maxEmails,omitempty"`
 }
 
 func NewPersonRequest(option ...PersonRequestOption) (*PersonRequest, error) {
@@ -42,6 +44,13 @@ func (pr *PersonRequest) isQueryable() bool {
 }
 
 func validatePersonRequest(pr *PersonRequest) error {
+	if isPopulated(pr.HemType) &&
+		pr.HemType != "md5" &&
+		pr.HemType != "sha1" &&
+		pr.HemType != "sha256" {
+		return NewFullContactError("HemType value can only be 'md5', 'sha1', 'sha256'")
+	}
+
 	if isPopulated(pr.Confidence) &&
 		pr.Confidence != "LOW" &&
 		pr.Confidence != "MED" &&
@@ -73,6 +82,7 @@ func validatePersonRequest(pr *PersonRequest) error {
 		return NewFullContactError(
 			"If you want to use 'location'(or placekey) or 'name' as an input, both must be present and they must have non-blank values")
 	}
+
 	return nil
 }
 
@@ -235,5 +245,17 @@ func WithMaxMaids(maxMaids int) PersonRequestOption {
 func WithPanoramaID(panoramaId string) PersonRequestOption {
 	return func(pr *PersonRequest) {
 		pr.PanoramaId = panoramaId
+	}
+}
+
+func WithHemType(hemType string) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.HemType = hemType
+	}
+}
+
+func WIthMaxEmails(maxEmails int) PersonRequestOption {
+	return func(pr *PersonRequest) {
+		pr.MaxEmails = maxEmails
 	}
 }
