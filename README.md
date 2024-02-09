@@ -1,6 +1,7 @@
 ## FullContact Go Client
 [![GoDoc](https://godoc.org/github.com/fullcontact/fullcontact-go/fc?status.svg)](https://godoc.org/github.com/fullcontact/fullcontact-go/fc)
 
+![status](https://github.com/fullcontact/fullcontact-go/actions/workflows/go.yml/badge.svg)
 
 The official [FullContact](https://www.fullcontact.com/) Golang Client Library for the FullContact V3 APIs.
 
