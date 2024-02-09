@@ -23,7 +23,7 @@ type Presence struct {
 type Finance struct {
 	CashValueBalanceHouseholdEstimate string `json:"cashValueBalanceHouseholdEstimate"`
 	FinancialDebtRangeEstimate        string `json:"financialDebtRangeEstimate"`
-	HouseholdIncomeEstimate           string `json:"householdIncomeEstimate"`
+	HouseholdIncomeEstimate           string `json:"income"`
 	NetWorthRange                     string `json:"netWorthRange"`
 	BankCard                          string `json:"bankCard"`
 	RetailCard                        string `json:"retailCard"`
