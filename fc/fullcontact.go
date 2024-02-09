@@ -3,6 +3,7 @@ package fullcontact
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -531,7 +532,7 @@ func setCompanyResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -556,7 +557,7 @@ func setResolveResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -581,7 +582,7 @@ func setResolveResponseWithTags(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -606,7 +607,7 @@ func setTagsResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -632,7 +633,7 @@ func setAudienceResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -656,12 +657,12 @@ func setAudienceResponse(apiResponse *APIResponse) {
 }
 
 func setPermissionCreateResponse(apiResponse *APIResponse) {
-	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -672,12 +673,12 @@ func setPermissionCreateResponse(apiResponse *APIResponse) {
 }
 
 func setPermissionDeleteResponse(apiResponse *APIResponse) {
-	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -693,7 +694,7 @@ func setPermissionFindResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -718,7 +719,7 @@ func setPermissionVerifyResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -743,7 +744,7 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -768,7 +769,7 @@ func setVerfiySignalsResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -793,7 +794,7 @@ func setVerfiyMatchResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -818,7 +819,7 @@ func setVerfiyActivityResponse(apiResponse *APIResponse) {
 
 	// Reset the buffer so that it can be re-read by the caller.
 	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	
+
 	if err != nil {
 		apiResponse.Err = err
 		return
