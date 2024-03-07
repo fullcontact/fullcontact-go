@@ -3,6 +3,7 @@ package fullcontact
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -141,8 +142,11 @@ func sendToChannel(ch chan *APIResponse, response *http.Response, url string, er
 	return
 }
 
-/* FullContact V3 Person Enrich API, takes an PersonRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact V3 Person Enrich API, takes an PersonRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PersonEnrich(personRequest *PersonRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 
@@ -166,8 +170,11 @@ func (fcClient *fullContactClient) PersonEnrich(personRequest *PersonRequest) ch
 	return ch
 }
 
-/* FullContact V3 Company Enrich API, takes an CompanyRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact V3 Company Enrich API, takes an CompanyRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) CompanyEnrich(companyRequest *CompanyRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if companyRequest == nil {
@@ -190,9 +197,12 @@ func (fcClient *fullContactClient) CompanyEnrich(companyRequest *CompanyRequest)
 	return ch
 }
 
-/* Resolve
+/*
+	Resolve
+
 FullContact Resolve API - IdentityMap, takes an ResolveRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) IdentityMap(resolveRequest *ResolveRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if resolveRequest == nil {
@@ -207,9 +217,12 @@ func (fcClient *fullContactClient) IdentityMap(resolveRequest *ResolveRequest) c
 	return fcClient.resolveRequest(ch, resolveRequest, identityMapUrl)
 }
 
-/* Resolve
+/*
+	Resolve
+
 FullContact Resolve API - IdentityResolve, takes an ResolveRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) IdentityResolve(resolveRequest *ResolveRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if resolveRequest == nil {
@@ -224,9 +237,12 @@ func (fcClient *fullContactClient) IdentityResolve(resolveRequest *ResolveReques
 	return fcClient.resolveRequest(ch, resolveRequest, identityResolveUrl)
 }
 
-/* Resolve
+/*
+	Resolve
+
 FullContact Resolve API - IdentityMapResolve, takes an ResolveRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) IdentityMapResolve(resolveRequest *ResolveRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if resolveRequest == nil {
@@ -241,9 +257,12 @@ func (fcClient *fullContactClient) IdentityMapResolve(resolveRequest *ResolveReq
 	return fcClient.resolveRequest(ch, resolveRequest, identityMapResolveUrl)
 }
 
-/* Resolve
+/*
+	Resolve
+
 FullContact Resolve API - IdentityResolve with Tags in response, takes an ResolveRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) IdentityResolveWithTags(resolveRequest *ResolveRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if resolveRequest == nil {
@@ -258,9 +277,12 @@ func (fcClient *fullContactClient) IdentityResolveWithTags(resolveRequest *Resol
 	return fcClient.resolveRequest(ch, resolveRequest, identityResolveWithTagsUrl)
 }
 
-/* Resolve
+/*
+	Resolve
+
 FullContact Resolve API - IdentityDelete, takes an ResolveRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) IdentityDelete(resolveRequest *ResolveRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if resolveRequest == nil {
@@ -286,8 +308,11 @@ func (fcClient *fullContactClient) resolveRequest(ch chan *APIResponse, resolveR
 	return ch
 }
 
-/* FullContact API for adding/creating tags for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact API for adding/creating tags for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) TagsCreate(tagsRequest *TagsRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if tagsRequest == nil {
@@ -305,8 +330,11 @@ func (fcClient *fullContactClient) TagsCreate(tagsRequest *TagsRequest) chan *AP
 	return ch
 }
 
-/* FullContact API for getting all tags for any recordId in your PIC, takes a 'recordId' and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact API for getting all tags for any recordId in your PIC, takes a 'recordId' and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) TagsGet(recordId string) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if !isPopulated(recordId) {
@@ -320,8 +348,11 @@ func (fcClient *fullContactClient) TagsGet(recordId string) chan *APIResponse {
 	return ch
 }
 
-/* FullContact API for deleting any tag(s) for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact API for deleting any tag(s) for any recordId in your PIC, takes a TagsRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) TagsDelete(tagsRequest *TagsRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if tagsRequest == nil {
@@ -339,8 +370,11 @@ func (fcClient *fullContactClient) TagsDelete(tagsRequest *TagsRequest) chan *AP
 	return ch
 }
 
-/* FullContact API for creating Audience based on tags from your PIC, takes a AudienceRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact API for creating Audience based on tags from your PIC, takes a AudienceRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) AudienceCreate(audienceRequest *AudienceRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if audienceRequest == nil {
@@ -358,8 +392,11 @@ func (fcClient *fullContactClient) AudienceCreate(audienceRequest *AudienceReque
 	return ch
 }
 
-/* FullContact API for downloading Audience created using 'AudienceCreate', takes a requestId and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact API for downloading Audience created using 'AudienceCreate', takes a requestId and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if !isPopulated(requestId) {
@@ -373,9 +410,12 @@ func (fcClient *fullContactClient) AudienceDownload(requestId string) chan *APIR
 	return ch
 }
 
-/* Permission
+/*
+	Permission
+
 FullContact Permission API - PermissionCreate, takes an PermissionRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PermissionCreate(permissionRequest *PermissionRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if permissionRequest == nil {
@@ -398,26 +438,38 @@ func (fcClient *fullContactClient) PermissionCreate(permissionRequest *Permissio
 	return ch
 }
 
-/* FullContact Permission API - PermissionDelete, takes an PermissionRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact Permission API - PermissionDelete, takes an PermissionRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PermissionDelete(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	return fcClient.validateAndSendMultiFieldRequestAsync(permissionDeleteUrl, multifieldRequest)
 }
 
-/* FullContact Permission API - PermissionFind, takes an PermissionRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact Permission API - PermissionFind, takes an PermissionRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PermissionFind(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	return fcClient.validateAndSendMultiFieldRequestAsync(permissionFindUrl, multifieldRequest)
 }
 
-/* FullContact Permission API - PermissionCurrent, takes an PermissionRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact Permission API - PermissionCurrent, takes an PermissionRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PermissionCurrent(multifieldRequest *MultifieldRequest) chan *APIResponse {
 	return fcClient.validateAndSendMultiFieldRequestAsync(permissionCurrentUrl, multifieldRequest)
 }
 
-/* FullContact Permission API - PermissionVerify, takes an PermissionRequest and returns a channel of type APIResponse.
-Request is converted to JSON and sends a Asynchronous request */
+/*
+	FullContact Permission API - PermissionVerify, takes an PermissionRequest and returns a channel of type APIResponse.
+
+Request is converted to JSON and sends a Asynchronous request
+*/
 func (fcClient *fullContactClient) PermissionVerify(permissionRequest *PermissionRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
 	if permissionRequest == nil {
@@ -471,11 +523,11 @@ func (fcClient *fullContactClient) VerifyActivity(multifieldRequest *MultifieldR
 }
 
 /*
-	This function will perform the `MultifieldRequest` validations and if
-	there are no errors then it'll be marshalled and a `MultifieldRequest` will be
-	made to the specified `url`
+This function will perform the `MultifieldRequest` validations and if
+there are no errors then it'll be marshalled and a `MultifieldRequest` will be
+made to the specified `url`
 
-	Returns a channel frm which the request response can be obtained
+Returns a channel frm which the request response can be obtained
 */
 func (fcClient *fullContactClient) validateAndSendMultiFieldRequestAsync(url string, multifieldRequest *MultifieldRequest) chan *APIResponse {
 	ch := make(chan *APIResponse)
@@ -503,6 +555,10 @@ func (fcClient *fullContactClient) validateAndSendMultiFieldRequestAsync(url str
 func setPersonResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -524,6 +580,10 @@ func setPersonResponse(apiResponse *APIResponse) {
 func setCompanyResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -545,6 +605,10 @@ func setCompanyResponse(apiResponse *APIResponse) {
 func setResolveResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -566,6 +630,10 @@ func setResolveResponse(apiResponse *APIResponse) {
 func setResolveResponseWithTags(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -587,6 +655,10 @@ func setResolveResponseWithTags(apiResponse *APIResponse) {
 func setTagsResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -609,6 +681,10 @@ func setAudienceResponse(apiResponse *APIResponse) {
 	contentType := apiResponse.RawHttpResponse.Header.Get("Content-Type")
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -632,8 +708,12 @@ func setAudienceResponse(apiResponse *APIResponse) {
 }
 
 func setPermissionCreateResponse(apiResponse *APIResponse) {
-	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -644,8 +724,12 @@ func setPermissionCreateResponse(apiResponse *APIResponse) {
 }
 
 func setPermissionDeleteResponse(apiResponse *APIResponse) {
-	_, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
+	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -658,6 +742,10 @@ func setPermissionDeleteResponse(apiResponse *APIResponse) {
 func setPermissionFindResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -679,6 +767,10 @@ func setPermissionFindResponse(apiResponse *APIResponse) {
 func setPermissionVerifyResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -700,6 +792,10 @@ func setPermissionVerifyResponse(apiResponse *APIResponse) {
 func setPermissionCurrentResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -721,6 +817,10 @@ func setPermissionCurrentResponse(apiResponse *APIResponse) {
 func setVerfiySignalsResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -742,6 +842,10 @@ func setVerfiySignalsResponse(apiResponse *APIResponse) {
 func setVerfiyMatchResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return
@@ -763,6 +867,10 @@ func setVerfiyMatchResponse(apiResponse *APIResponse) {
 func setVerfiyActivityResponse(apiResponse *APIResponse) {
 	bodyBytes, err := ioutil.ReadAll(apiResponse.RawHttpResponse.Body)
 	defer apiResponse.RawHttpResponse.Body.Close()
+
+	// Reset the buffer so that it can be re-read by the caller.
+	apiResponse.RawHttpResponse.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err != nil {
 		apiResponse.Err = err
 		return

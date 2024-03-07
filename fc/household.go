@@ -21,15 +21,14 @@ type Presence struct {
 }
 
 type Finance struct {
-	CashValueBalanceHouseholdEstimate string `json:"cashValueBalanceHouseholdEstimate"`
-	FinancialDebtRangeEstimate        string `json:"financialDebtRangeEstimate"`
-	HouseholdIncomeEstimate           string `json:"householdIncomeEstimate"`
-	NetWorthRange                     string `json:"netWorthRange"`
-	BankCard                          string `json:"bankCard"`
-	RetailCard                        string `json:"retailCard"`
-	ActiveLineOfCredit                bool   `json:"activeLineOfCredit"`
-	Bankruptcy                        bool   `json:"bankruptcy"`
-	DiscretionaryIncomeEstimate       int    `json:"discretionaryIncomeEstimate"`
+	Income                         string `json:"income"`
+	DiscretionarySpendingIncome    string `json:"discretionarySpendingIncome"`
+	FirstMortgageAmountInThousands string `json:"firstMortgageAmountInThousands"`
+	HomeMarketValueTaxRecord       string `json:"homeMarketValueTaxRecord"`
+	ShortTermLiability             string `json:"shortTermLiability"`
+	NetWorth                       string `json:"netWorth"`
+	WealthResources                string `json:"wealthResources"`
+	PaymentMethodCreditCard        string `json:"paymentMethodCreditCard"`
 }
 
 type LocationInfo struct {
