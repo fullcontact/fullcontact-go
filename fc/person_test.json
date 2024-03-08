@@ -44,7 +44,7 @@
       },
       "presence": {
         "multigenerationalResident": "PRESENT",
-        "children": "PRESENT"
+        "presenceOfChildren": "Y"
       },
       "finance" : {
         "income" : "$30,000 - $39,999",
