@@ -16,7 +16,7 @@ type HomeInfo struct {
 }
 
 type Presence struct {
-	Children                  string `json:"children"`
+	PresenceOfChildren        string `json:"presenceOfChildren"`
 	MultigenerationalResident string `json:"multigenerationalResident"`
 }
 
